@@ -20,6 +20,59 @@ ANSI_COLORS = {
     "white": "\033[97m",
 }
 
+STATE_EMOJI = {
+    "Alabama": "🎸",
+    "Alaska": "❄️",
+    "Arizona": "🏜️",
+    "Arkansas": "⛰️",
+    "California": "🌉",
+    "Colorado": "🏔️",
+    "Connecticut": "⚓",
+    "Delaware": "🦀",
+    "Florida": "🐊",
+    "Georgia": "🍑",
+    "Hawaii": "🌺",
+    "Idaho": "🥔",
+    "Illinois": "🌆",
+    "Indiana": "🏎️",
+    "Iowa": "🌽",
+    "Kansas": "🌻",
+    "Kentucky": "🐎",
+    "Louisiana": "🎷",
+    "Maine": "🦞",
+    "Maryland": "🦀",
+    "Massachusetts": "🏛️",
+    "Michigan": "🌊",
+    "Minnesota": "🛶",
+    "Mississippi": "🎺",
+    "Missouri": "🌉",
+    "Montana": "🦬",
+    "Nebraska": "🌽",
+    "Nevada": "🎰",
+    "New Hampshire": "🍁",
+    "New Jersey": "🛣️",
+    "New Mexico": "🎈",
+    "New York": "🗽",
+    "North Carolina": "🏖️",
+    "North Dakota": "🌾",
+    "Ohio": "🎡",
+    "Oklahoma": "🛣️",
+    "Oregon": "🌲",
+    "Pennsylvania": "🔔",
+    "Rhode Island": "⛵",
+    "South Carolina": "🏖️",
+    "South Dakota": "🦬",
+    "Tennessee": "🎵",
+    "Texas": "🤠",
+    "Utah": "🏜️",
+    "Vermont": "🍁",
+    "Virginia": "🏛️",
+    "Washington": "☕",
+    "West Virginia": "⛏️",
+    "Wisconsin": "🧀",
+    "Wyoming": "🦬",
+}
+
 
 @dataclass
 class Player:
@@ -30,7 +83,7 @@ class Player:
 
 @dataclass
 class GameSettings:
-    show_map: bool = False
+    show_map: bool = True
     default_edit_method: str = "cursor"
     plane_per_color: int = 2
     drive_cards: int = 5
@@ -72,10 +125,10 @@ def pad_ansi(text: str, width: int) -> str:
 
 def card_text(card: dict) -> str:
     if card["type"] == "state":
-        return card["state"]
+        return state_text(card["state"], short=False)
     if card["type"] == "plane":
-        return "Plane"
-    return "Drive"
+        return "✈️ Plane"
+    return "🚗 Drive"
 
 
 def card_color(card: dict) -> str | None:
@@ -94,12 +147,41 @@ def card_label(card: dict) -> str:
     return text
 
 
+def state_emoji(state: str) -> str:
+    return STATE_EMOJI.get(state, "🗺️")
+
+
+def state_text(state: str, *, short: bool) -> str:
+    # Canonical state label formatter: use this everywhere state text is rendered.
+    if short:
+        return f"{STATE_ABBR[state]}{state_emoji(state)}"
+    return f"{state_emoji(state)} {state}"
+
+
+def state_map_token(state: str) -> str:
+    return state_text(state, short=True)
+
+
+def validate_state_formatters() -> None:
+    """
+    Lightweight DRY guard: keep all state UI text flowing through state_text().
+    Fails fast if formatter behavior drifts during future edits.
+    """
+    for state in game.STATE_ADJACENCY.keys():
+        long_label = state_text(state, short=False)
+        short_label = state_text(state, short=True)
+        emoji = state_emoji(state)
+        assert state in long_label
+        assert STATE_ABBR[state] in short_label
+        assert emoji in long_label and emoji in short_label
+
+
 def describe_hand(hand: list[dict]) -> str:
     return ", ".join(f"{i}:{card_label(c)}" for i, c in enumerate(hand))
 
 
 def render_hand_slots(hand: list[dict]) -> str:
-    width = 16
+    width = max(16, max(visible_len(f"[{card_label(c)}]") for c in hand) + 3)
     top = "".join(pad_ansi(f"{i+1:>2}", width) for i in range(len(hand)))
     bottom = "".join(pad_ansi(f"[{card_label(c)}]", width) for c in hand)
     idx = "".join(pad_ansi(f"({i})", width) for i in range(len(hand)))
@@ -264,18 +346,10 @@ def _draw_edge(canvas: list[list[str]], x1: int, y1: int, x2: int, y2: int) -> N
         canvas[y][x] = "+"
 
 
-def _colorize_map_line(line: str) -> str:
-    out = line
-    for abbr, state in ABBR_TO_STATE.items():
-        if abbr in out:
-            out = out.replace(abbr, paint(abbr, game.STATE_COLORS[state], bold=True))
-    return out
-
-
 MAP_HEADER = "USA adjacency map (lines show neighboring borders)"
 
 
-def _build_map_lines() -> list[str]:
+def _build_map_canvas() -> list[list[str]]:
     width = 74
     height = 26
     canvas = [[" " for _ in range(width)] for _ in range(height)]
@@ -299,13 +373,31 @@ def _build_map_lines() -> list[str]:
             canvas[y][x] = abbr[0]
             canvas[y][x + 1] = abbr[1]
 
-    return ["".join(row).rstrip() for row in canvas]
+    return canvas
 
 
 def get_map_lines(*, colorize: bool) -> list[str]:
-    lines = _build_map_lines()
+    canvas = _build_map_canvas()
+    width = len(canvas[0]) if canvas else 0
+    state_at = {(y, x): ABBR_TO_STATE[abbr] for abbr, (x, y) in MAP_POS.items()}
+    lines: list[str] = []
+
     if colorize:
-        lines = [_colorize_map_line(line) for line in lines]
+        for y, row in enumerate(canvas):
+            x = 0
+            out = ""
+            while x < width:
+                state = state_at.get((y, x))
+                if state:
+                    out += paint(state_map_token(state), game.STATE_COLORS[state], bold=True)
+                    x += 2
+                else:
+                    out += row[x]
+                    x += 1
+            lines.append(out.rstrip())
+    else:
+        lines = ["".join(row).rstrip() for row in canvas]
+
     return [MAP_HEADER, ""] + lines
 
 
@@ -337,12 +429,13 @@ def draw_map_curses(stdscr, start_row: int, color_pair_for: dict[str, int]) -> i
         state = ABBR_TO_STATE[abbr]
         color = game.STATE_COLORS[state]
         attr = curses.color_pair(color_pair_for.get(color, 0)) | curses.A_BOLD
+        token = state_map_token(state)
         draw_y = row_offset + y
         if draw_y < 0 or draw_y >= max_rows - 1:
             continue
-        if x < 0 or x + 1 >= max_cols:
+        if x < 0 or x + len(token) >= max_cols:
             continue
-        stdscr.addstr(draw_y, x, abbr, attr)
+        stdscr.addstr(draw_y, x, token, attr)
 
     return row
 
@@ -1097,6 +1190,7 @@ def play_game(
     drive_cards: int = 5,
     default_edit_method: str = "cursor",
 ) -> None:
+    validate_state_formatters()
     if seed is not None:
         random.seed(seed)
     deck = build_default_deck(plane_per_color=plane_per_color, drive_cards=drive_cards)
@@ -1104,7 +1198,7 @@ def play_game(
 
     players = [Player("You", True, [])]
     settings = GameSettings(
-        show_map=False,
+        show_map=True,
         default_edit_method=default_edit_method,
         plane_per_color=plane_per_color,
         drive_cards=drive_cards,
