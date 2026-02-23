@@ -244,17 +244,24 @@ def _draw_edge(canvas: list[list[str]], x1: int, y1: int, x2: int, y2: int) -> N
     steps = max(abs(dx), abs(dy))
     if steps <= 1:
         return
-    glyph = _edge_glyph(dx, dy)
-    for i in range(1, steps):
-        x = round(x1 + dx * i / steps)
-        y = round(y1 + dy * i / steps)
-        if y < 0 or y >= len(canvas) or x < 0 or x >= len(canvas[0]):
-            continue
-        # Preserve nodes over edges; blend crossing edges into '+'
-        if canvas[y][x].strip() == "":
-            canvas[y][x] = glyph
-        elif canvas[y][x] in {"-", "|", "/", "\\"} and canvas[y][x] != glyph:
-            canvas[y][x] = "+"
+    # Draw a single connector mark at midpoint to reduce clutter.
+    # This keeps adjacency visible while preserving a cleaner USA shape.
+    x = round((x1 + x2) / 2)
+    y = round((y1 + y2) / 2)
+    if y < 0 or y >= len(canvas) or x < 0 or x >= len(canvas[0]):
+        return
+
+    if abs(dx) >= abs(dy) * 2:
+        glyph = "-"
+    elif abs(dy) >= abs(dx) * 2:
+        glyph = "|"
+    else:
+        glyph = _edge_glyph(dx, dy)
+
+    if canvas[y][x].strip() == "":
+        canvas[y][x] = glyph
+    elif canvas[y][x] in {"-", "|", "/", "\\"} and canvas[y][x] != glyph:
+        canvas[y][x] = "+"
 
 
 def _colorize_map_line(line: str) -> str:
