@@ -265,6 +265,9 @@ def _colorize_map_line(line: str) -> str:
     return out
 
 
+MAP_HEADER = "USA adjacency map (lines show neighboring borders)"
+
+
 def _build_map_lines() -> list[str]:
     width = 74
     height = 26
@@ -292,16 +295,49 @@ def _build_map_lines() -> list[str]:
     return ["".join(row).rstrip() for row in canvas]
 
 
-def render_text_map() -> str:
+def get_map_lines(*, colorize: bool) -> list[str]:
     lines = _build_map_lines()
-    lines = [_colorize_map_line(line) for line in lines]
-    header = "USA adjacency map (lines show neighboring borders)"
-    return header + "\n" + "\n".join(lines)
+    if colorize:
+        lines = [_colorize_map_line(line) for line in lines]
+    return [MAP_HEADER, ""] + lines
+
+
+def render_text_map() -> str:
+    return "\n".join(get_map_lines(colorize=True))
 
 
 def render_text_map_plain() -> str:
-    header = "USA adjacency map (lines show neighboring borders)"
-    return header + "\n" + "\n".join(_build_map_lines())
+    return "\n".join(get_map_lines(colorize=False))
+
+
+def draw_map_curses(stdscr, start_row: int, color_pair_for: dict[str, int]) -> int:
+    import curses
+
+    lines = get_map_lines(colorize=False)
+    max_rows = curses.LINES
+    max_cols = max(1, curses.COLS - 1)
+    row = start_row
+    for line in lines:
+        if row >= max_rows - 1:
+            break
+        stdscr.addstr(row, 0, line[:max_cols])
+        row += 1
+
+    # Overlay colored abbreviations using the same map coordinates.
+    # +2 for header + blank line from get_map_lines()
+    row_offset = start_row + 2
+    for abbr, (x, y) in MAP_POS.items():
+        state = ABBR_TO_STATE[abbr]
+        color = game.STATE_COLORS[state]
+        attr = curses.color_pair(color_pair_for.get(color, 0)) | curses.A_BOLD
+        draw_y = row_offset + y
+        if draw_y < 0 or draw_y >= max_rows - 1:
+            continue
+        if x < 0 or x + 1 >= max_cols:
+            continue
+        stdscr.addstr(draw_y, x, abbr, attr)
+
+    return row
 
 
 def build_default_deck(plane_per_color: int = 2, drive_cards: int = 5) -> list[dict]:
@@ -586,11 +622,7 @@ def try_edit_hand_cursor_mode_curses(hand: list[dict], settings: GameSettings) -
             stdscr.erase()
             row_offset = 0
             if settings.show_map:
-                for line in render_text_map_plain().splitlines():
-                    if row_offset >= curses.LINES - 1:
-                        break
-                    stdscr.addstr(row_offset, 0, line[: max(0, curses.COLS - 1)])
-                    row_offset += 1
+                row_offset = draw_map_curses(stdscr, row_offset, color_pair_for)
                 row_offset += 1
 
             stdscr.addstr(row_offset, 0, "Arrow edit mode (q=done, u=undo, t=tx-log)")
@@ -849,13 +881,13 @@ def apply_edit_method(hand: list[dict], method: str, settings: GameSettings) -> 
 
 def choose_default_edit_method(settings: GameSettings) -> None:
     print(f"Current default edit method: {settings.default_edit_method}")
-    print("Choose default: 1) cursor/arrows 2) swap 3) full-order")
+    print("Choose default: 1) cursor (c) 2) swap (s) 3) full-order (o)")
     cmd = input("method> ").strip().lower()
-    if cmd in {"1", "cursor", "arrows"}:
+    if cmd in {"1", "cursor", "arrows", "c"}:
         settings.default_edit_method = "cursor"
-    elif cmd in {"2", "swap"}:
+    elif cmd in {"2", "swap", "s"}:
         settings.default_edit_method = "swap"
-    elif cmd in {"3", "order", "full-order"}:
+    elif cmd in {"3", "order", "full-order", "o"}:
         settings.default_edit_method = "order"
     else:
         print("Unknown method. Keeping current default.")
@@ -863,20 +895,20 @@ def choose_default_edit_method(settings: GameSettings) -> None:
 
 def edit_hand_menu(hand: list[dict], settings: GameSettings) -> list[dict]:
     while True:
-        print("Edit options: 1) cursor/arrows 2) swap 3) full-order 4) set-default 5) done")
+        print("Edit options: 1) cursor(c) 2) swap(s) 3) full-order(o) 4) set-default(d) 5) exit(x)")
         cmd = input("choose> ").strip().lower()
-        if cmd in {"5", "done", "q"}:
+        if cmd in {"5", "exit", "x", "q"}:
             return hand
-        if cmd == "1":
+        if cmd in {"1", "c"}:
             hand = edit_hand_cursor_mode(hand, settings)
             continue
-        if cmd == "2":
+        if cmd in {"2", "s"}:
             hand = edit_hand_swap_mode(hand, settings)
             continue
-        if cmd == "3":
+        if cmd in {"3", "o"}:
             hand = edit_hand_order_mode(hand, settings)
             continue
-        if cmd in {"4", "default"}:
+        if cmd in {"4", "default", "d"}:
             choose_default_edit_method(settings)
             continue
         print("Unknown edit choice.")
@@ -957,7 +989,8 @@ def human_turn(
         show_analysis(player.hand)
         show_pick_suggestions(player.hand, discard_row)
         action = input(
-            f"Action: 1)edit[{settings.default_edit_method}] 2)pickup 3)toggle-map 4)edit-method 5)edit-menu 6)auto-plan 7)tx-log : "
+            f"Action: 1)edit(e)[{settings.default_edit_method}] 2)pickup(p) 3)toggle-map(t) "
+            f"4)set-edit-default(s) 5)edit-options(o) 6)auto-plan(a) 7)history-log(h) : "
         ).strip().lower()
         if action in {"1", "edit", "e"}:
             player.hand = apply_edit_method(player.hand, settings.default_edit_method, settings)
@@ -966,16 +999,16 @@ def human_turn(
             settings.show_map = not settings.show_map
             print(f"Map view is now {'ON' if settings.show_map else 'OFF'}.")
             continue
-        if action in {"4", "method"}:
+        if action in {"4", "method", "set", "s"}:
             choose_default_edit_method(settings)
             continue
-        if action in {"5", "menu"}:
+        if action in {"5", "menu", "options", "o"}:
             player.hand = edit_hand_menu(player.hand, settings)
             continue
-        if action in {"6", "plan", "auto"}:
+        if action in {"6", "plan", "auto", "a"}:
             autocomplete_planner(player.hand, discard_row, settings)
             continue
-        if action in {"7", "tx", "transactions"}:
+        if action in {"7", "tx", "transactions", "history", "h"}:
             print_transaction_tail(settings)
             continue
         if action in {"2", "pickup", "p"}:
@@ -1001,7 +1034,8 @@ def human_turn(
         render_turn_ui(hand_11, discard_row, settings)
         print("\nPost-pick mode (11 cards).")
         action = input(
-            f"Action: 1)edit[{settings.default_edit_method}] 2)discard 3)toggle-map 4)edit-method 5)edit-menu 6)auto-plan 7)tx-log : "
+            f"Action: 1)edit(e)[{settings.default_edit_method}] 2)discard(d) 3)toggle-map(t) "
+            f"4)set-edit-default(s) 5)edit-options(o) 6)auto-plan(a) 7)history-log(h) : "
         ).strip().lower()
         if action in {"1", "edit", "e"}:
             hand_11 = apply_edit_method(hand_11, settings.default_edit_method, settings)
@@ -1010,16 +1044,16 @@ def human_turn(
             settings.show_map = not settings.show_map
             print(f"Map view is now {'ON' if settings.show_map else 'OFF'}.")
             continue
-        if action in {"4", "method"}:
+        if action in {"4", "method", "set", "s"}:
             choose_default_edit_method(settings)
             continue
-        if action in {"5", "menu"}:
+        if action in {"5", "menu", "options", "o"}:
             hand_11 = edit_hand_menu(hand_11, settings)
             continue
-        if action in {"6", "plan", "auto"}:
+        if action in {"6", "plan", "auto", "a"}:
             autocomplete_planner(hand_11, discard_row, settings)
             continue
-        if action in {"7", "tx", "transactions"}:
+        if action in {"7", "tx", "transactions", "history", "h"}:
             print_transaction_tail(settings)
             continue
         if action in {"2", "discard", "d"}:
@@ -1116,7 +1150,13 @@ if __name__ == "__main__":
     except Exception:
         drive_cards = 5
     default_method = input("Default edit method (cursor/swap/order) [cursor]: ").strip().lower()
-    if default_method not in {"cursor", "swap", "order"}:
+    if default_method in {"c", "cursor"}:
+        default_method = "cursor"
+    elif default_method in {"s", "swap"}:
+        default_method = "swap"
+    elif default_method in {"o", "order"}:
+        default_method = "order"
+    else:
         default_method = "cursor"
 
     play_game(
