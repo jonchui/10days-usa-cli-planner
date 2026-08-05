@@ -7,6 +7,7 @@ than just marking them wrong.
 
 - **`index.html`** — the app. One self-contained file, no install, works offline.
 - **`math_quest.py`** — the same engine in the terminal.
+- **`serve.sh`** — serve it to the house wifi on port 80.
 
 ---
 
@@ -37,31 +38,27 @@ browser chrome, exactly like a native app.
 
 ### 2. On the home wifi only (no internet needed)
 
-From the folder containing `index.html`, on your Mac:
+On your Mac, from this folder:
 
 ```bash
-cd ~/Sites/mathquest
-python3 -m http.server 8080
+./serve.sh
 ```
 
-Then on the iPhone (same wifi): `http://<your-mac-ip>:8080`
+That serves on **port 80**, so the address is a bare IP with no port on the end —
+`http://192.168.0.30` — which is far easier for a kid to type on an iPad. It
+prints the exact URL to hand out. Ports below 1024 are privileged, so it will
+ask for your password.
 
-Find the Mac's IP with `ipconfig getifaddr en0`.
-
-**Want to drop the `:8080`?** Ports below 1024 need root, so serve on port 80
-with:
+Don't want the sudo prompt? Pass a high port instead:
 
 ```bash
-sudo python3 -m http.server 80
+./serve.sh 8080      # -> http://192.168.0.30:8080
 ```
-
-…and the address becomes just `http://<your-mac-ip>` — much easier for a kid to
-type. The trade-off is that it needs `sudo` every time and only one thing can
-own port 80 at a time.
 
 Two caveats with the LAN approach: the Mac has to be awake and running the
 server, and your router can hand the Mac a new IP address after a reboot, which
 silently breaks the bookmark. A DHCP reservation in the router pins it.
+
 
 ### 3. AirDrop the file
 
