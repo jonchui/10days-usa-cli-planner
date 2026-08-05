@@ -1,0 +1,63 @@
+# A second prompt set pointed at this repo's own subject matter, to show the
+# harness is not tied to one topic. Run with:
+#   ./promptlab.sh promptlab/prompts/ten-days-strategy.toml
+
+[run]
+name = "ten-days-strategy"
+backend = "claude"
+model = "opus"
+rounds = 3
+parallel = 3
+target_score = 92
+max_calls = 90
+seed = 7
+rubric = ["correctness", "specificity", "actionability", "honesty", "format"]
+
+[[prompt]]
+id = "opening"
+title = "Opening-hand heuristics"
+goal = """A short, memorable set of rules for evaluating an opening hand in
+10 Days in the USA, good enough to change how I play on turn one."""
+prompt = """
+In the board game 10 Days in the USA, players build a 10-card sequence of states
+and transport cards. Walking moves between adjacent states, driving covers
+exactly a two-state gap, and planes are colour-specific.
+
+Give me a decision procedure for evaluating my opening hand in under 30 seconds:
+what to count first, which cards to treat as anchors, and which to treat as
+disposable. Include the two most common opening mistakes and what to do instead.
+Be concrete about card counts, not vague about "flexibility".
+"""
+
+[[prompt]]
+id = "discard-policy"
+title = "When to take from the discard row"
+goal = """A clear policy for the pickup decision — discard row versus deck —
+that I can apply without stopping to calculate."""
+prompt = """
+In 10 Days in the USA, on each turn you draw either the top of the deck (unknown)
+or one of three face-up discards (known), then place it and discard one card.
+
+Write a policy for that choice. Frame it as explicit conditions: when a known
+discard beats an unknown draw, when it does not, and how the answer changes early
+versus late in the game. State the reasoning briefly, then give a rule I can
+recite at the table. Say plainly where the policy is uncertain.
+"""
+
+[[prompt]]
+id = "cli-critique"
+title = "Critique of a CLI game assistant's UX"
+goal = """A prioritized, implementable critique of a terminal game helper's
+interface — the kind of feedback that changes the next commit."""
+prompt = """
+Critique the UX of a terminal-based board game assistant with these affordances:
+a numbered action menu (edit hand, pickup, toggle map, change edit method, edit
+menu, auto-plan, transaction log), an ANSI-coloured US map, a curses cursor mode
+for reordering cards with undo, and an auto-planner that reports route counts and
+draw probabilities.
+
+Give the five highest-leverage improvements, ranked by (impact / effort). For
+each: the specific problem, the concrete change, and what would get worse. Skip
+generic advice about "adding colour" or "improving discoverability" — be specific
+enough to implement.
+"""

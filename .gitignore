@@ -4,3 +4,8 @@ __pycache__/
 *.pyd
 .DS_Store
 tmp_*.png
+
+# PromptLab: response cache is machine-local; runs are regenerable output.
+.promptlab/
+runs/
+!runs/*-example/

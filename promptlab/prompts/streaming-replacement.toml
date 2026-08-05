@@ -1,0 +1,116 @@
+# Source: https://www.threads.com/@intalogy/post/DbQxMRcmlBH
+#   "NETFLIX cancelled. HULU cancelled. PRIME cancelled! Didn't lose all the
+#    shows. CLAUDE replaced all three for free. 5 GOLDEN prompts, 0 subscriptions"
+#
+# HEADS UP: the post's five prompts are rendered inside the post image, not its
+# text, so they could not be fetched verbatim. The five below are reconstructed
+# from the post's premise (use Claude as the entertainment, not the assistant).
+# To use the originals: replace the `prompt = """..."""` bodies and nothing else.
+
+[run]
+name = "streaming-replacement"
+backend = "claude"
+model = "opus"
+rounds = 4
+parallel = 5
+target_score = 93
+max_calls = 200
+max_seconds = 2400
+seed = 1337
+rubric = ["entertainment value", "specificity", "originality", "pacing", "format"]
+
+[[prompt]]
+id = "series"
+title = "A serialized show written for one viewer"
+goal = """A binge-worthy episodic series, personalized to my taste, that reads as
+well as prestige TV and always leaves me wanting the next episode."""
+prompt = """
+You are the showrunner of a serialized drama written for an audience of one.
+
+Ask me nothing. Invent the premise from this brief: a mid-size American city, an
+ensemble of five, one slow-burn mystery that pays off across a season.
+
+Write EPISODE 1 (about 1,500 words) as prose, not a screenplay:
+- Open on an image, not exposition.
+- Give each of the five a want, a secret, and a specific verbal tic.
+- End on a reversal that recontextualises the opening image.
+Close with a one-line "NEXT EPISODE" tease and nothing else.
+"""
+rubric = ["hook", "character specificity", "prose quality", "cliffhanger", "originality"]
+
+[[prompt]]
+id = "recommender"
+title = "The recommendation engine that actually knows you"
+goal = """Ten things worth watching tonight that a streaming carousel would never
+surface, each justified well enough that I can pick in 30 seconds."""
+prompt = """
+Act as a film programmer with encyclopaedic taste and zero commercial incentive.
+
+I like: tight 90-minute films, procedural competence, dry humour, and endings that
+refuse to explain themselves. I dislike: quippy ensembles, three-hour runtimes,
+and anything that telegraphs its twist.
+
+Give me 10 films or series. For each: title, year, runtime, where the mood lands,
+one sentence on why it fits MY taste specifically (not a plot summary), and the
+single scene that justifies the pick. Rank them by how likely I am to love it and
+say plainly which one you are least sure about, and why.
+"""
+rubric = ["taste calibration", "specificity", "non-obviousness", "honesty", "scannability"]
+
+[[prompt]]
+id = "interactive"
+title = "Choose-your-own-adventure with real consequences"
+goal = """An interactive story where my choices actually branch the world, with
+enough state tracked that it feels like a game rather than a mood board."""
+prompt = """
+Run an interactive fiction session for me. You are the engine, not a narrator
+asking permission.
+
+Setting: a generation ship 60 years into a 400-year voyage. I am the ship's
+arbiter, woken early.
+
+Each turn: 250 words of scene, then exactly three numbered choices with visibly
+different risk profiles. Track and display a compact status line (crew trust,
+hull integrity, days awake, secrets known). Choices must have consequences that
+persist: if I burn a bridge in turn 2, it stays burned.
+
+Begin with turn 1. Do not summarize these rules back to me.
+"""
+rubric = ["immersion", "meaningful branching", "state tracking", "pacing", "format"]
+
+[[prompt]]
+id = "deep-dive"
+title = "The documentary episode nobody made"
+goal = """A documentary-quality deep dive on a genuinely strange true story,
+paced like an episode rather than an encyclopedia entry."""
+prompt = """
+Write a 2,000-word documentary episode about a real historical episode that is
+strange, verifiable, and under-covered — not one of the usual five.
+
+Structure it the way a good documentary is cut: cold open on the strangest
+detail, then the setup, then the turn, then what it cost, then the thing that is
+still unresolved. Use named people, dates, and numbers. Where the record is
+genuinely disputed, say so in-line rather than smoothing it over.
+
+No bullet points, no "in conclusion". Just the episode.
+"""
+rubric = ["factual grounding", "narrative pacing", "non-obviousness", "honesty about gaps", "prose quality"]
+
+[[prompt]]
+id = "comedy"
+title = "A comedy set built from my week"
+goal = """Genuinely funny short-form comedy on demand, with real joke structure
+rather than observations that merely sound like jokes."""
+prompt = """
+You are a stand-up writer with a dry, precise voice — closer to deadpan
+observational than to shouted punchlines.
+
+Write a 5-minute tight-five on the specific absurdity of modern software: status
+pages, calendar invites, onboarding flows, and the phrase "we've updated our
+terms".
+
+Requirements: at least three callbacks, one runner that escalates three times,
+and a closer that lands on the runner. Mark the intended beat with a line break.
+No stage directions, no "hey folks", no explaining the joke.
+"""
+rubric = ["actual funniness", "joke structure", "voice consistency", "callbacks", "originality"]

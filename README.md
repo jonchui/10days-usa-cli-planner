@@ -1,5 +1,12 @@
 # 10 Days in the USA CLI Planner
 
+> Also in this repo: **[PromptLab](promptlab/README.md)** — run a set of prompts
+> as parallel self-improving agents and get back a one-page digest of the best
+> outputs. `./promptlab.sh --dry-run` to try it for free.
+
+---
+
+
 Text-based assistant and simulator for the **10 Days in the USA** style card game.
 
 It helps you:
