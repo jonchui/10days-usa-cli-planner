@@ -32,6 +32,27 @@ SAVE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "math_quest
 # lists (which mean parentheses). The solver walks it in true PEMDAS order and
 # records each step, which is what powers the hints and walkthroughs.
 
+def _stdout_handles(ch: str) -> bool:
+    encoding = getattr(sys.stdout, "encoding", None) or "ascii"
+    try:
+        ch.encode(encoding)
+        return True
+    except (UnicodeEncodeError, LookupError):
+        return False
+
+
+# Superscripts crash on terminals that are not UTF-8 (a plain `python3
+# math_quest.py > out.txt`, a Windows console, anything with LC_ALL=C). Try to
+# switch stdout to UTF-8 first, and fall back to writing 4^2 if it truly cannot
+# represent 4².
+if not _stdout_handles("²"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError, LookupError):
+        pass
+USE_SUPERSCRIPT = _stdout_handles("²")
+
+
 OPS = {
     "+": lambda a, b: a + b,
     "-": lambda a, b: a - b,
@@ -43,6 +64,12 @@ RULE_OF = {"^": "Exponents", "x": "Multiply", "/": "Divide", "+": "Add", "-": "S
 SUPERSCRIPT = {2: "²", 3: "³", 4: "⁴"}
 
 
+def power_mark(power) -> str:
+    if USE_SUPERSCRIPT:
+        return SUPERSCRIPT.get(power, "^" + str(power))
+    return "^" + str(power)
+
+
 def render(tokens) -> str:
     """Draw the expression the way a textbook would, including 4²."""
     parts: list[str] = []
@@ -50,8 +77,7 @@ def render(tokens) -> str:
     while i < len(tokens):
         t = tokens[i]
         if t == "^":
-            power = tokens[i + 1]
-            parts[-1] += SUPERSCRIPT.get(power, "^" + str(power))
+            parts[-1] += power_mark(tokens[i + 1])
             i += 2
             continue
         parts.append("(" + render(t) + ")" if isinstance(t, list) else str(t))
@@ -101,7 +127,7 @@ def solve(tokens, steps, wrap=None):
                 value = OPS[op](a, b)
                 tokens[i - 1:i + 2] = [value]
                 if op == "^":
-                    text = f"{a}{SUPERSCRIPT.get(b, '^' + str(b))} means " + \
+                    text = f"{a}{power_mark(b)} means " + \
                            " x ".join([str(a)] * b) + f" = {fmt(value)}"
                 else:
                     text = f"{a} {op} {b} = {fmt(value)}"
@@ -385,6 +411,17 @@ COACH_ADVICE = {
 LENGTH_CHOICES = [20, 40, 80, 100]
 
 
+def quest_length(raw: str) -> int:
+    """Any sane number of questions, not just the four buttons in the web app."""
+    try:
+        value = int(raw)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{raw!r} is not a whole number")
+    if not 5 <= value <= 500:
+        raise argparse.ArgumentTypeError(f"{value} is outside 5-500")
+    return value
+
+
 def question_count(kid_id: str, base: int) -> int:
     kid = KIDS[kid_id]
     if not kid["short_day"]:
@@ -661,8 +698,9 @@ def selftest() -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Math Quest - a daily PEMDAS adventure.")
     parser.add_argument("--kid", choices=sorted(KIDS), help="skip the menu")
-    parser.add_argument("--length", type=int, default=80, choices=LENGTH_CHOICES,
-                        help="questions per day for Lucas and Jordan (Sydney gets a shorter day)")
+    parser.add_argument("--length", type=quest_length, default=80, metavar="N",
+                        help="questions per day for Lucas and Jordan, 5-500 "
+                             "(Sydney gets a shorter day). Default 80.")
     parser.add_argument("--date", help="replay a specific day, in DD/MM/YY form")
     parser.add_argument("--selftest", action="store_true", help="validate the question generator")
     args = parser.parse_args()

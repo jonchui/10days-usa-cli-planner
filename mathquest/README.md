@@ -7,6 +7,7 @@ than just marking them wrong.
 
 - **`index.html`** — the app. One self-contained file, no install, works offline.
 - **`math_quest.py`** — the same engine in the terminal.
+- **`worksheet.py`** — printable PDF worksheets, 50 questions per page.
 - **`serve.sh`** — serve it to the house wifi on port 80.
 
 ---
@@ -135,12 +136,49 @@ missing across every session and calls out the weakest one.
 
 ---
 
+## Printable worksheets
+
+50 questions laid out **5 across and 10 down** on one page, with a matching
+answer key on page 2 so checking them is a straight left-to-right read.
+
+```bash
+pip install fpdf2      # once
+python3 worksheet.py   # writes one PDF per kid, ready to print
+```
+
+Open the PDF and hit Cmd-P. Options:
+
+```bash
+python3 worksheet.py --kid sydney      # just one kid
+python3 worksheet.py --level 6         # pin the difficulty
+python3 worksheet.py --count 30        # fewer questions
+python3 worksheet.py --cols 4          # wider columns for longer expressions
+python3 worksheet.py --no-ramp         # every question at one level
+python3 worksheet.py --out ~/Desktop   # where to write them
+```
+
+By default each sheet is built around **the level that kid is currently
+playing at**, ramping gently across three levels so it starts easy and
+finishes at their edge. Questions are checked for duplicates, so nobody gets
+`7 - 3` four times on the same page.
+
+One deliberate exception: Sydney's printed sheets never go below level 4. Her
+first three levels are single-operation warm-ups (`8 - 1`), which are right for
+her first minutes in the game but would make an order-of-operations worksheet
+with no order of operations in it. Pass `--level 2` if you want those anyway.
+
+PDF generation uses [fpdf2](https://github.com/py-pdf/fpdf2). The expressions
+are measured and the type shrunk per cell, so long ones like
+`(10 + 13) × (4 - 1)` still fit their column.
+
+---
+
 ## Terminal version
 
 ```bash
 python3 math_quest.py                 # menu
 python3 math_quest.py --kid lucas     # jump straight in
-python3 math_quest.py --length 80     # questions per day
+python3 math_quest.py --length 50     # questions per day (any number 5-500)
 python3 math_quest.py --date 05/08/26 # replay a specific day
 python3 math_quest.py --selftest      # validate the generator
 ```

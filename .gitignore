@@ -7,3 +7,6 @@ tmp_*.png
 
 # Math Quest local progress
 mathquest/math_quest_save.json
+
+# generated worksheets
+mathquest/*.pdf
