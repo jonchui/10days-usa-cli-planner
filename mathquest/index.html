@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Math Quest">
+<meta name="theme-color" content="#1b1035">
+<title>Math Quest</title>
+</head>
+<body>
+<!--APP-START-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --bg: #150e2b;
+    --bg2: #241748;
+    --card: rgba(255,255,255,.07);
+    --line: rgba(255,255,255,.16);
+    --ink: #f6f2ff;
+    --dim: #b9aede;
+    --accent: #8b7bf7;
+    --accent2: #c9a6ff;
+    --good: #3ddc97;
+    --bad: #ff7a90;
+    --radius: 20px;
+  }
+  body[data-kid="sydney"] {
+    --bg: #2a1030; --bg2: #4a1c4e; --accent: #ff7ec4; --accent2: #ffd166; --ink: #fff4fb; --dim: #ffc9e8;
+  }
+  body[data-kid="lucas"] {
+    --bg: #04202e; --bg2: #0a3c50; --accent: #35c8e8; --accent2: #7bf1a8; --ink: #eefaff; --dim: #9fd8e8;
+  }
+  body[data-kid="jordan"] {
+    --bg: #1b0f33; --bg2: #3a1a63; --accent: #ffb020; --accent2: #b98bff; --ink: #fff6e8; --dim: #d6bdf5;
+  }
+
+  html, body {
+    margin: 0; padding: 0; min-height: 100%;
+  }
+  body {
+    font-family: "Baloo 2", "Trebuchet MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: radial-gradient(1200px 700px at 50% -10%, var(--bg2), var(--bg) 60%), var(--bg);
+    background-attachment: fixed;
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .5s ease;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px 16px 40px; }
+  .screen { display: none; animation: rise .28s ease; }
+  .screen.on { display: block; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px);} to { opacity:1; transform:none; } }
+
+  /* ---------- home ---------- */
+  .brand { text-align: center; padding: 26px 0 10px; }
+  .brand h1 {
+    margin: 0; font-size: clamp(38px, 11vw, 64px); line-height: 1;
+    letter-spacing: -1px;
+    background: linear-gradient(100deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .brand p { margin: 10px 0 0; color: var(--dim); font-size: 16px; }
+  .datechip {
+    display: inline-block; margin-top: 14px; padding: 7px 16px; border-radius: 999px;
+    background: var(--card); border: 1px solid var(--line); color: var(--dim);
+    font-size: 14px; letter-spacing: .5px;
+  }
+  .cards { display: grid; gap: 14px; margin-top: 26px; }
+  .kidcard {
+    display: flex; align-items: center; gap: 16px; width: 100%; text-align: left;
+    padding: 18px; border-radius: var(--radius); cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    font-family: inherit; font-size: 17px;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .kidcard:hover, .kidcard:focus-visible { transform: translateY(-3px); border-color: var(--k); background: rgba(255,255,255,.11); outline: none; }
+  .kidcard .emoji { font-size: 40px; line-height: 1; filter: drop-shadow(0 4px 10px rgba(0,0,0,.4)); }
+  .kidcard .who { display: block; font-size: 24px; font-weight: 700; color: var(--k); line-height: 1.15; }
+  .kidcard .sub { display: block; color: var(--dim); font-size: 14px; margin-top: 4px; line-height: 1.35; }
+  .kidcard .mid { flex: 1; min-width: 0; }
+  .kidcard .lvl {
+    flex: none; text-align: center; padding: 8px 12px; border-radius: 14px;
+    background: rgba(0,0,0,.25); min-width: 74px;
+  }
+  .kidcard .lvl b { display: block; font-size: 22px; color: var(--k); }
+  .kidcard .lvl span { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ---------- play ---------- */
+  .topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .chip {
+    padding: 7px 13px; border-radius: 999px; background: var(--card);
+    border: 1px solid var(--line); font-size: 14px; color: var(--dim); white-space: nowrap;
+  }
+  .chip b { color: var(--ink); }
+  .iconbtn {
+    margin-left: auto; background: var(--card); border: 1px solid var(--line); color: var(--dim);
+    border-radius: 999px; padding: 7px 14px; font-family: inherit; font-size: 14px; cursor: pointer;
+  }
+  .iconbtn:hover { color: var(--ink); }
+
+  .bar { height: 12px; border-radius: 999px; background: rgba(0,0,0,.3); overflow: hidden; margin-bottom: 6px; }
+  .bar > i { display: block; height: 100%; width: 0; border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .4s ease; }
+  .barlabel { display:flex; justify-content: space-between; font-size: 12px; color: var(--dim); margin-bottom: 16px; }
+
+  .story {
+    border-radius: var(--radius); border: 1px solid var(--line);
+    background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+    padding: 14px 16px; margin-bottom: 14px; font-size: 15px; line-height: 1.5;
+  }
+  .story .tag { display: block; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent2); margin-bottom: 5px; }
+
+  .qcard {
+    border-radius: 26px; border: 1px solid var(--line); padding: 26px 18px;
+    background: linear-gradient(170deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .qcard .qnum { font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--dim); }
+  .expr {
+    font-size: clamp(34px, 9vw, 56px); font-weight: 700; margin: 14px 0 4px;
+    letter-spacing: 1px; word-spacing: 4px; line-height: 1.25;
+  }
+  .expr .eq { color: var(--dim); }
+  .answer {
+    display: inline-block; min-width: 110px; border-bottom: 4px solid var(--accent);
+    padding: 0 10px 2px; color: var(--accent2);
+  }
+  .answer.empty::after { content: "?"; opacity: .35; }
+  .answer.flash-good { animation: pop .4s ease; }
+  @keyframes pop { 50% { transform: scale(1.18); } }
+  .qcard.shake { animation: shake .4s ease; }
+  @keyframes shake { 25% { transform: translateX(-9px);} 75% { transform: translateX(9px);} }
+
+  .feedback { min-height: 26px; margin-top: 10px; font-size: 16px; font-weight: 600; }
+  .feedback.good { color: var(--good); }
+  .feedback.bad { color: var(--bad); }
+
+  .hintbox {
+    margin-top: 14px; border-radius: 16px; border: 1px dashed var(--line);
+    background: rgba(0,0,0,.22); padding: 14px 16px; text-align: left; font-size: 15px; line-height: 1.6;
+  }
+  .hintbox h4 { margin: 0 0 8px; font-size: 13px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent2); }
+  .hintbox ol { margin: 6px 0 0; padding-left: 20px; }
+  .hintbox li { margin-bottom: 5px; }
+  .hintbox code {
+    font-family: inherit; background: rgba(255,255,255,.12); padding: 1px 7px; border-radius: 7px;
+  }
+
+  .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+  .key {
+    font-family: inherit; font-size: 26px; font-weight: 700; padding: 16px 0;
+    border-radius: 16px; border: 1px solid var(--line); background: var(--card);
+    color: var(--ink); cursor: pointer; user-select: none;
+    transition: transform .08s ease, background .15s ease;
+  }
+  .key:active { transform: scale(.94); background: rgba(255,255,255,.2); }
+  .key.wide { grid-column: span 2; }
+  .key.go { background: linear-gradient(120deg, var(--accent), var(--accent2)); color: #16112c; border: none; font-size: 22px; }
+  .key.hint { background: rgba(255,255,255,.05); font-size: 17px; color: var(--accent2); }
+
+  /* ---------- reward / done ---------- */
+  .big {
+    text-align: center; padding: 30px 20px; border-radius: 26px;
+    border: 1px solid var(--line);
+    background: linear-gradient(170deg, rgba(255,255,255,.13), rgba(255,255,255,.03));
+  }
+  .big .trophy { font-size: 74px; line-height: 1; }
+  .big h2 { margin: 12px 0 6px; font-size: 30px; color: var(--accent2); }
+  .big p { margin: 6px 0; color: var(--dim); font-size: 16px; line-height: 1.55; }
+  .big .prize { font-size: 20px; color: var(--ink); font-weight: 700; margin-top: 12px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0 4px; }
+  .stat { background: rgba(0,0,0,.26); border-radius: 16px; padding: 12px 6px; }
+  .stat b { display: block; font-size: 26px; color: var(--accent); }
+  .stat span { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
+  .btn {
+    display: inline-block; margin-top: 20px; padding: 15px 34px; border-radius: 999px; border: none;
+    background: linear-gradient(120deg, var(--accent), var(--accent2)); color: #16112c;
+    font-family: inherit; font-size: 19px; font-weight: 700; cursor: pointer;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn.ghost { background: none; border: 1px solid var(--line); color: var(--dim); font-size: 15px; padding: 11px 22px; }
+
+  .shelf { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+  .shelf span {
+    padding: 7px 13px; border-radius: 999px; background: rgba(0,0,0,.28);
+    border: 1px solid var(--line); font-size: 13px;
+  }
+  .coach {
+    margin-top: 18px; text-align: left; border-radius: 18px; padding: 16px;
+    background: rgba(0,0,0,.25); border: 1px solid var(--line); font-size: 15px; line-height: 1.6;
+  }
+  .coach h3 { margin: 0 0 8px; font-size: 13px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--accent2); }
+
+  .burst { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 50; }
+  .burst i {
+    position: absolute; font-style: normal; font-size: 26px;
+    animation: fly 1.1s ease-out forwards;
+  }
+  @keyframes fly { to { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; } }
+
+  .foot { text-align: center; color: var(--dim); font-size: 12px; margin-top: 26px; line-height: 1.7; }
+
+  .lenpick { text-align: center; margin-top: 26px; }
+  .lenlabel { display: block; font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+  .lenrow { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .lenrow button {
+    font-family: inherit; font-size: 15px; padding: 9px 18px; border-radius: 999px; cursor: pointer;
+    background: var(--card); border: 1px solid var(--line); color: var(--dim);
+  }
+  .lenrow button.sel { background: linear-gradient(120deg, var(--accent), var(--accent2)); color: #16112c; border-color: transparent; font-weight: 700; }
+  .lennote { display: block; margin-top: 10px; font-size: 12px; color: var(--dim); }
+</style>
+
+<div class="wrap">
+
+  <!-- ================= HOME ================= -->
+  <section id="s-home" class="screen on">
+    <div class="brand">
+      <h1>Math Quest</h1>
+      <p>A brand-new adventure every single day.</p>
+      <div class="datechip" id="datechip">--/--/--</div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="lenpick">
+      <span class="lenlabel">Quest length</span>
+      <div class="lenrow" id="lenrow"></div>
+      <span class="lennote" id="lennote"></span>
+    </div>
+    <div class="foot">
+      Pick your name to start today's quest.<br>
+      Your level, treasures and progress save automatically.
+    </div>
+  </section>
+
+  <!-- ================= PLAY ================= -->
+  <section id="s-play" class="screen">
+    <div class="topbar">
+      <span class="chip" id="c-who">—</span>
+      <span class="chip" id="c-level">Level 1</span>
+      <span class="chip" id="c-score">0 ✅</span>
+      <button class="iconbtn" id="btn-home">← Home</button>
+    </div>
+    <div class="bar"><i id="progbar"></i></div>
+    <div class="barlabel"><span id="progtext">Wave 1 of 10</span><span id="streaktext"></span></div>
+
+    <div class="story" id="story"><span class="tag">Today's mission</span><span id="storytext"></span></div>
+
+    <div class="qcard" id="qcard">
+      <div class="qnum" id="qnum">Question 1</div>
+      <div class="expr"><span id="exprtext">2 + 2</span> <span class="eq">=</span> <span class="answer empty" id="answerbox"></span></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="hintbox" id="hintbox" style="display:none"><h4 id="hinttitle">Hint</h4><div id="hinttext"></div></div>
+    </div>
+
+    <div class="pad">
+      <button class="key" data-k="7">7</button>
+      <button class="key" data-k="8">8</button>
+      <button class="key" data-k="9">9</button>
+      <button class="key" data-k="4">4</button>
+      <button class="key" data-k="5">5</button>
+      <button class="key" data-k="6">6</button>
+      <button class="key" data-k="1">1</button>
+      <button class="key" data-k="2">2</button>
+      <button class="key" data-k="3">3</button>
+      <button class="key" data-k="-">−</button>
+      <button class="key" data-k="0">0</button>
+      <button class="key" data-k="del">⌫</button>
+      <button class="key hint" data-k="hint" id="hintkey">💡 Hint</button>
+      <button class="key go wide" data-k="go" id="gokey">Check!</button>
+    </div>
+    <div class="foot">You can also type with a keyboard. Enter = check.</div>
+  </section>
+
+  <!-- ================= WAVE COMPLETE ================= -->
+  <section id="s-wave" class="screen">
+    <div class="big">
+      <div class="trophy" id="w-emoji">🏆</div>
+      <h2 id="w-title">Wave clear!</h2>
+      <p id="w-text"></p>
+      <div class="prize" id="w-prize"></div>
+      <div class="stats">
+        <div class="stat"><b id="w-right">0</b><span>Right</span></div>
+        <div class="stat"><b id="w-level">1</b><span>Level</span></div>
+        <div class="stat"><b id="w-streak">0</b><span>Best streak</span></div>
+      </div>
+      <div class="story" style="text-align:left;margin-top:18px"><span class="tag">Coach tip</span><span id="w-lesson"></span></div>
+      <button class="btn" id="w-next">Next wave →</button>
+    </div>
+  </section>
+
+  <!-- ================= DAY COMPLETE ================= -->
+  <section id="s-done" class="screen">
+    <div class="big">
+      <div class="trophy" id="d-emoji">🎉</div>
+      <h2 id="d-title">Quest complete!</h2>
+      <p id="d-text"></p>
+      <div class="stats">
+        <div class="stat"><b id="d-right">0</b><span>Right today</span></div>
+        <div class="stat"><b id="d-level">1</b><span>Level</span></div>
+        <div class="stat"><b id="d-streak">0</b><span>Best streak</span></div>
+      </div>
+      <div class="shelf" id="d-shelf"></div>
+      <div class="coach" id="d-coach"></div>
+      <button class="btn" id="d-again">Play a bonus round</button>
+      <div><button class="btn ghost" id="d-home">Back to home</button></div>
+    </div>
+  </section>
+
+  <div class="foot" id="version"></div>
+</div>
+
+<script>
+/* =====================================================================
+   MATH QUEST — a daily PEMDAS adventure
+   ---------------------------------------------------------------------
+   The whole day is generated from a seed made of the date (DD/MM/YY)
+   plus the kid's name, so every kid gets their own quest and the same
+   quest on the same day on any device. Difficulty then adapts live to
+   how fast and how accurately they answer, and the level they reach is
+   remembered for tomorrow.
+   ===================================================================== */
+
+/* ------------------------- seeded randomness ------------------------- */
+function hashString(s) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h >>> 0;
+}
+function makeRng(seedText) {
+  let a = hashString(seedText);
+  const next = () => {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return {
+    next,
+    int: (lo, hi) => lo + Math.floor(next() * (hi - lo + 1)),
+    pick: arr => arr[Math.floor(next() * arr.length)],
+    chance: p => next() < p
+  };
+}
+function dateKey(d) {
+  const p = n => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + p(d.getFullYear() % 100);
+}
+
+/* ------------------------- expression engine -------------------------
+   An expression is an array of tokens. A token is a number, an operator
+   string, or a nested array (which means parentheses). The solver walks
+   it in true PEMDAS order and records every step, which gives us hints
+   and full walkthroughs for free.
+---------------------------------------------------------------------- */
+const OPS = { '+': (a,b)=>a+b, '-': (a,b)=>a-b, '×': (a,b)=>a*b, '÷': (a,b)=>a/b, '^': (a,b)=>Math.pow(a,b) };
+const RULE_OF = { '^': 'Exponents', '×': 'Multiply', '÷': 'Divide', '+': 'Add', '-': 'Subtract' };
+
+const SUPERSCRIPT = { 2: '²', 3: '³', 4: '⁴' };
+
+// Exponents are drawn the way a textbook draws them (4²), not as "4 ^ 2".
+function renderTokens(tokens) {
+  const parts = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t === '^') {
+      const power = tokens[i + 1];
+      parts[parts.length - 1] += (SUPERSCRIPT[power] || ('^' + power));
+      i++;
+      continue;
+    }
+    parts.push(Array.isArray(t) ? '(' + renderTokens(t) + ')' : String(t));
+  }
+  return parts.join(' ');
+}
+
+/* `wrap` renders a partially-solved token list back in its FULL context, so a
+   step taken inside parentheses still reports the whole expression. Without it
+   a hint for 4² - (18 ÷ 6 + 10) would claim the problem is now "3 + 10"
+   instead of "4² - (3 + 10)". */
+function solve(tokens, steps, wrap) {
+  wrap = wrap || function (t) { return renderTokens(t); };
+  tokens = tokens.slice();
+
+  // 1. Parentheses (innermost first, via recursion)
+  for (let i = 0; i < tokens.length; i++) {
+    if (Array.isArray(tokens[i])) {
+      const innerText = renderTokens(tokens[i]);
+      const idx = i;
+      const innerWrap = function (innerTokens) {
+        const copy = tokens.slice();
+        copy[idx] = innerTokens.length === 1 ? innerTokens[0] : innerTokens.slice();
+        return wrap(copy);
+      };
+      const mark = steps.length;
+      const value = solve(tokens[i], steps, innerWrap);
+      tokens[i] = value;
+      const added = steps.length - mark;
+      if (added === 1) {
+        steps[mark].rule = 'Parentheses';
+        steps[mark].text = 'Parentheses first: (' + innerText + ') = ' + value;
+      } else if (added > 1) {
+        // The last inner step already leaves the expression in its post-paren
+        // form, so note it there instead of repeating the whole line.
+        steps[steps.length - 1].text += ' — that finishes the ( )';
+      }
+      if (steps.length) steps[steps.length - 1].after = wrap(tokens);
+    }
+  }
+
+  // 2. Exponents, then 3. × and ÷ left to right, then 4. + and - left to right
+  for (const group of [['^'], ['×','÷'], ['+','-']]) {
+    let i = 1;
+    while (i < tokens.length) {
+      if (group.indexOf(tokens[i]) !== -1) {
+        const a = tokens[i-1], op = tokens[i], b = tokens[i+1];
+        const value = OPS[op](a, b);
+        tokens.splice(i - 1, 3, value);
+        steps.push({
+          rule: RULE_OF[op],
+          text: (op === '^'
+            ? a + (SUPERSCRIPT[b] || '^' + b) + ' means ' + Array(b).fill(a).join(' × ') + ' = ' + value
+            : a + ' ' + op + ' ' + b + ' = ' + value),
+          value: value,
+          after: wrap(tokens)
+        });
+        i = 1;
+      } else {
+        i += 2;
+      }
+    }
+  }
+  return tokens[0];
+}
+
+function analyse(tokens) {
+  const steps = [];
+  const answer = solve(tokens, steps);
+  return { text: renderTokens(tokens), answer: answer, steps: steps };
+}
+
+function rulesUsed(tokens) {
+  const found = new Set();
+  (function walk(list) {
+    for (const t of list) {
+      if (Array.isArray(t)) { found.add('parentheses'); walk(t); }
+      else if (t === '^') found.add('exponents');
+      else if (t === '×' || t === '÷') found.add('multiply-divide');
+      else if (t === '+' || t === '-') found.add('add-subtract');
+    }
+  })(tokens);
+  return Array.from(found);
+}
+
+/* ------------------------- problem shapes -------------------------
+   Every shape is a builder that samples numbers from a config. A shape
+   is only accepted if the answer AND every intermediate step obey the
+   config's limits, so nobody ever meets a fraction or (for Sydney) a
+   negative number.
+------------------------------------------------------------------- */
+const SHAPES = {
+  add:        (r,c) => [r.int(1, c.term), '+', r.int(1, c.term)],
+  sub:        (r,c) => { const a = r.int(2, c.term), b = r.int(1, a); return [a, '-', b]; },
+  mul:        (r,c) => [r.pick(c.factors), '×', r.int(2, c.factor)],
+  addAdd:     (r,c) => [r.int(1, c.term), '+', r.int(1, c.term), '+', r.int(1, c.term)],
+  mulAdd:     (r,c) => [r.int(1, c.term), '+', r.pick(c.factors), '×', r.int(2, c.factor)],
+  addMul:     (r,c) => [r.pick(c.factors), '×', r.int(2, c.factor), '+', r.int(1, c.term)],
+  mulSub:     (r,c) => [r.int(4, c.term), '-', r.pick(c.factors), '×', r.int(2, c.factor)],
+  parenMul:   (r,c) => [[r.int(1, c.term), '+', r.int(1, c.term)], '×', r.int(2, c.factor)],
+  parenSub:   (r,c) => { const a = r.int(3, c.term), b = r.int(1, a - 1); return [[a, '-', b], '×', r.int(2, c.factor)]; },
+  twoMul:     (r,c) => [r.pick(c.factors), '×', r.int(2, c.factor), '+', r.pick(c.factors), '×', r.int(2, c.factor)],
+  threeMix:   (r,c) => [r.int(1, c.term), '+', r.pick(c.factors), '×', r.int(2, c.factor), '-', r.int(1, c.term)],
+  parenMulSub:(r,c) => [[r.int(1, c.term), '+', r.int(1, c.term)], '×', r.int(2, c.factor), '-', r.int(1, c.term)],
+  divAdd:     (r,c) => { const b = r.int(2, c.divisor), k = r.int(2, c.factor); return [b * k, '÷', b, '+', r.int(1, c.term)]; },
+  addDiv:     (r,c) => { const b = r.int(2, c.divisor), k = r.int(2, c.factor); return [r.int(1, c.term), '+', b * k, '÷', b]; },
+  mulDiv:     (r,c) => { const b = r.int(2, c.divisor), k = r.int(2, c.factor); return [r.pick(c.factors), '×', r.int(2, c.factor), '+', b * k, '÷', b]; },
+  parenDiv:   (r,c) => { const b = r.int(2, c.divisor), k = r.int(2, c.factor); return [[b * k, '÷', b], '+', r.int(1, c.term)]; },
+  parenParen: (r,c) => { const a = r.int(3, c.term), b = r.int(1, a - 1); return [[r.int(1, c.term), '+', r.int(1, c.term)], '×', [a, '-', b]]; },
+  sqAdd:      (r,c) => [r.int(2, c.power), '^', 2, '+', r.int(1, c.term)],
+  sqMul:      (r,c) => [r.int(2, c.power), '^', 2, '+', r.pick(c.factors), '×', r.int(2, c.factor)],
+  parenSq:    (r,c) => { const a = r.int(1, 4), b = r.int(1, 4); return [[a, '+', b], '^', 2, '-', r.int(1, c.term)]; },
+  mulParen:   (r,c) => { const b = r.int(2, c.divisor), k = r.int(2, c.factor); return [r.int(2, c.factor), '×', [r.int(1, c.term), '+', r.int(1, c.term)], '-', b * k, '÷', b]; },
+  nested:     (r,c) => { const d = r.int(2, c.divisor); const inner = [[r.int(1, c.term), '+', r.int(1, c.term)], '×', r.int(2, c.factor)]; return [inner, '÷', d, '+', r.int(1, c.term)]; },
+  bigMix:     (r,c) => { const b = r.int(2, c.divisor), k = r.int(2, c.factor); return [r.int(2, c.power), '^', 2, '-', [b * k, '÷', b, '+', r.int(1, c.term)]]; }
+};
+
+function buildProblem(rng, shapeNames, cfg) {
+  for (let attempt = 0; attempt < 400; attempt++) {
+    const name = rng.pick(shapeNames);
+    const tokens = SHAPES[name](rng, cfg);
+    const info = analyse(tokens);
+    if (!Number.isInteger(info.answer)) continue;
+    if (info.answer > cfg.maxAnswer) continue;
+    if (!cfg.allowNegative && info.answer < 0) continue;
+    if (cfg.minAnswer !== undefined && info.answer < cfg.minAnswer) continue;
+    const bad = info.steps.some(s =>
+      !Number.isInteger(s.value) ||
+      (!cfg.allowNegative && s.value < 0) ||
+      Math.abs(s.value) > cfg.maxAnswer * 2
+    );
+    if (bad) continue;
+    return {
+      text: info.text, answer: info.answer, steps: info.steps,
+      tokens: tokens, rules: rulesUsed(tokens), shape: name
+    };
+  }
+  // Guaranteed fallback so a quest can never stall. Kept inside the config's
+  // own limits so even this path cannot hand a kid something out of range.
+  const a = rng.int(1, Math.min(6, cfg.term));
+  const b = rng.pick(cfg.factors || [2,3,4]);
+  const c = rng.int(2, Math.min(3, cfg.factor || 3));
+  const tokens = [a, '+', b, '×', c];
+  const info = analyse(tokens);
+  return { text: info.text, answer: info.answer, steps: info.steps, tokens: tokens, rules: rulesUsed(tokens), shape: 'FALLBACK' };
+}
+
+/* ------------------------- the three adventurers -------------------------
+   Sydney's ladder was rebuilt from the ground up to be gentle. Levels 1-3
+   are single-step warm-ups with numbers she can count on her fingers. Her
+   times tables never go past 5 (with a friendly ×10 thrown in), her answers
+   are capped well under 60, division only shows up at level 8, and squares
+   only at level 10. She also climbs slower and drops faster than the boys,
+   so she sits in the "I can do this" zone instead of the "I give up" zone.
+-------------------------------------------------------------------------- */
+
+const SYDNEY_CFG = { term: 9, factor: 5, factors: [2,3,4,5], divisor: 4, power: 3, maxAnswer: 45, allowNegative: false, minAnswer: 0 };
+
+const KIDS = {
+  sydney: {
+    name: 'Sydney', age: 8, emoji: '🧋', color: '#ff7ec4',
+    tagline: 'Boba & ice cream shop with Stripes the tiger',
+    shortDay: true, waveSize: 5,
+    startLevel: 1, upStreak: 4, downMisses: 2, maxLevel: 10,
+    pace: 40,              // seconds before an answer counts as "slow"
+    cfg: SYDNEY_CFG,
+    ladder: [
+      { shapes: ['add','sub'],                             cfg: { term: 9,  maxAnswer: 18 } },
+      { shapes: ['add','sub','addAdd'],                    cfg: { term: 9,  maxAnswer: 24 } },
+      { shapes: ['mul','addAdd'],                          cfg: { term: 9,  factor: 5, maxAnswer: 25 } },
+      { shapes: ['mulAdd','addMul'],                       cfg: { term: 8,  factor: 4, factors: [2,3,4], maxAnswer: 28 } },
+      { shapes: ['mulAdd','addMul','mulSub'],              cfg: { term: 9,  factor: 5, maxAnswer: 32 } },
+      { shapes: ['parenMul','parenSub'],                   cfg: { term: 5,  factor: 4, maxAnswer: 36 } },
+      { shapes: ['parenMul','mulAdd','twoMul'],            cfg: { term: 6,  factor: 4, maxAnswer: 40 } },
+      { shapes: ['divAdd','addDiv','parenDiv'],            cfg: { term: 8,  factor: 5, divisor: 4, maxAnswer: 40 } },
+      { shapes: ['threeMix','parenMulSub'],                cfg: { term: 7,  factor: 4, maxAnswer: 42 } },
+      { shapes: ['sqAdd','parenMul','divAdd'],             cfg: { term: 8,  factor: 5, power: 4, maxAnswer: 45 } }
+    ],
+    lessons: [
+      'Math has an order, like making boba: pearls in the cup FIRST, then the tea. Numbers have an order too!',
+      'When you see + and + together, just go left to right, like scooping ice cream one scoop at a time.',
+      '× means groups of. 3 × 4 is 3 cups with 4 pearls each. Count the pearls!',
+      'BIG RULE: × always goes before +. Multiply first, then add. Stripes says: pearls before tea!',
+      'Still × before +. Do the × part, write the small answer down, then finish.',
+      'Parentheses ( ) are a hug. Whatever is inside the hug gets done first, always.',
+      'Hug first ( ), then ×, then +. Three easy steps, in that order, every time.',
+      '÷ means sharing fairly. 12 ÷ 3 is 12 sprinkles shared with 3 friends. And ÷ goes before + too!',
+      'The full order: ( ) hugs first, then × and ÷, then + and − last. You know all of it now!',
+      'A little 2 up high means times itself. 3² = 3 × 3 = 9. That is the last secret ingredient!'
+    ],
+    story: [
+      'Stripes the tiger flipped the OPEN sign. First customers are lining up!',
+      'A field trip bus just pulled up. Twelve thirsty kids. Go go go!',
+      'Someone ordered a rainbow sundae with EVERY topping. You can do this.',
+      'The ice cream machine is making funny noises. Solve fast, keep it cool.',
+      'A tiny princess wants a sparkly lychee boba for her spa party.',
+      'Stripes spilled the tapioca. Earn it back, one order at a time.',
+      'Art class is here! They want drinks in every color of the rainbow.',
+      'A food critic walked in wearing sunglasses inside. Stay calm.',
+      'Line out the door. You are officially the fastest boba maker in town.',
+      'FINAL ORDER of the day: Stripes\' Secret Recipe. Only a master can make it.'
+    ],
+    rewards: ['Tapioca Pearls 🧋','Mango Popping Boba 🥭','Whipped Cream ☁️','Rainbow Sprinkles 🌈','Strawberry Drizzle 🍓','Lychee Jelly 💎','Brown Sugar Swirl 🍯','Sparkle Spa Sticker ✨','Golden Straw 🥇','Stripes\' Secret Recipe 🐯'],
+    prizeWord: 'Boba Bucks',
+    prizeEmoji: '🧋',
+    cheer: ['Yes! Stripes is doing a happy tail wiggle.','Perfect pour!','That customer is SO happy.','You are amazing at this.','Sweet! Literally.','Stripes says: purrfect.','Big smile from the whole line.','You made that look easy.'],
+    kind: ['Almost! Look again, you are close.','Ooh, so close. Try one more time.','No worries, even Stripes messes up. Look at the hint!','That is a tricky one. Here is a clue.']
+  },
+
+  lucas: {
+    name: 'Lucas', age: 12, emoji: '🎣', color: '#35c8e8',
+    tagline: 'Fishing trip — deeper water, rarer fish',
+    waveSize: 10,
+    startLevel: 2, upStreak: 3, downMisses: 2, maxLevel: 10,
+    pace: 22,
+    cfg: { term: 12, factor: 9, factors: [2,3,4,5,6,7,8,9], divisor: 6, power: 6, maxAnswer: 200, allowNegative: false },
+    ladder: [
+      { shapes: ['mulAdd','addMul'],                        cfg: { term: 10, factor: 6, maxAnswer: 70 } },
+      { shapes: ['mulAdd','mulSub','twoMul'],               cfg: { term: 12, factor: 7, maxAnswer: 90 } },
+      { shapes: ['parenMul','parenSub'],                    cfg: { term: 10, factor: 8, maxAnswer: 110 } },
+      { shapes: ['threeMix','twoMul','divAdd'],             cfg: { term: 12, factor: 8, maxAnswer: 120 } },
+      { shapes: ['mulDiv','parenMulSub','addDiv'],          cfg: { term: 12, factor: 8, divisor: 6, maxAnswer: 130 } },
+      { shapes: ['parenParen','parenMulSub'],               cfg: { term: 11, factor: 8, maxAnswer: 150 } },
+      { shapes: ['sqAdd','sqMul','mulDiv'],                 cfg: { term: 12, factor: 8, power: 6, maxAnswer: 160 } },
+      { shapes: ['parenSq','parenParen','mulParen'],        cfg: { term: 12, factor: 8, maxAnswer: 170 } },
+      { shapes: ['nested','mulParen','sqMul'],              cfg: { term: 12, factor: 9, divisor: 6, maxAnswer: 180 } },
+      { shapes: ['bigMix','nested','parenSq'],              cfg: { term: 12, factor: 9, power: 7, maxAnswer: 200 } }
+    ],
+    lessons: [
+      'PEMDAS is your tackle box order: Parentheses, Exponents, Multiply/Divide, Add/Subtract.',
+      'Multiply and divide always beat add and subtract. Line up your × and ÷ first.',
+      'Parentheses outrank everything. Clear the ( ) before you cast anything else.',
+      'Three or more operations? Scan the whole line first, then attack in PEMDAS order.',
+      '× and ÷ are equal rank — do them left to right, in the order they appear.',
+      'Two sets of parentheses? Solve each one separately, then combine.',
+      'Exponents come right after parentheses. 4² = 16 happens before any multiplying.',
+      'A parenthesis can be squared: (3 + 2)² means solve inside first, THEN square it.',
+      'Nested parentheses: always work from the innermost hook outward.',
+      '+ and − are also equal rank — left to right. Never jump ahead to the easy-looking one.'
+    ],
+    story: [
+      'Dawn on the water. Glassy calm. Perfect conditions.',
+      'You found a drop-off. Fish are stacked on the ledge.',
+      'Something big just followed your lure to the boat.',
+      'Wind picking up. Harder casts, better fish.',
+      'You switched to the deep spinner. Nice call.',
+      'Weed line ahead — this is where the smart ones hide.',
+      'Storm clouds building. Fish are feeding hard before it hits.',
+      'You are in 40 feet of water now. Trophy territory.',
+      'Your line just went tight and started peeling. Hold on.',
+      'Last cast of the day. Everyone knows what happens on the last cast.'
+    ],
+    rewards: ['Sunfish 🐟','Bluegill 🐠','Yellow Perch 🎣','Smallmouth Bass 🐟','Walleye ✨','Northern Pike ⚡','Lake Trout 🌊','Muskie 🏆','Sturgeon 🦕','Legendary Golden Muskie 🥇'],
+    prizeWord: 'Fish',
+    prizeEmoji: '🐟',
+    cheer: ['Fish on!','Perfect cast.','Clean hookset.','That is a keeper.','Nice one — right in the strike zone.','Smooth. Real angler stuff.','Netted it.','You read that water perfectly.'],
+    kind: ['Missed the hookset. Reel in and try again.','It shook off. Happens to everyone.','Close — check your order of operations.','Snagged. Look at the hint and re-cast.']
+  },
+
+  jordan: {
+    name: 'Jordan', age: 13, emoji: '🏆', color: '#ffb020',
+    tagline: 'Trophy road — Bronze to Legendary',
+    waveSize: 10,
+    startLevel: 3, upStreak: 3, downMisses: 2, maxLevel: 10,
+    pace: 18,
+    cfg: { term: 14, factor: 9, factors: [2,3,4,5,6,7,8,9], divisor: 8, power: 8, maxAnswer: 260, allowNegative: true, minAnswer: -30 },
+    ladder: [
+      { shapes: ['mulAdd','twoMul'],                        cfg: { term: 12, factor: 8, maxAnswer: 90 } },
+      { shapes: ['parenMul','threeMix','mulSub'],           cfg: { term: 13, factor: 9, maxAnswer: 120 } },
+      { shapes: ['parenMulSub','divAdd','twoMul'],          cfg: { term: 14, factor: 9, maxAnswer: 140 } },
+      { shapes: ['mulDiv','parenParen'],                    cfg: { term: 14, factor: 9, divisor: 8, maxAnswer: 160 } },
+      { shapes: ['sqAdd','sqMul','parenParen'],             cfg: { term: 14, factor: 9, power: 7, maxAnswer: 180 } },
+      { shapes: ['parenSq','mulParen','mulDiv'],            cfg: { term: 14, factor: 9, maxAnswer: 200 } },
+      { shapes: ['nested','sqMul','parenSq'],               cfg: { term: 14, factor: 9, divisor: 8, maxAnswer: 220 } },
+      { shapes: ['bigMix','nested','mulParen'],             cfg: { term: 14, factor: 9, power: 8, maxAnswer: 240 } },
+      { shapes: ['bigMix','parenSq','nested'],              cfg: { term: 15, factor: 9, power: 8, maxAnswer: 250 } },
+      { shapes: ['bigMix','nested','sqMul','parenSq'],      cfg: { term: 15, factor: 9, power: 9, maxAnswer: 260 } }
+    ],
+    lessons: [
+      'PEMDAS is the meta: Parentheses, Exponents, Multiply/Divide, Add/Subtract. Play it in order, win the match.',
+      'Multiply and divide always outrank add and subtract. No exceptions, no matter what looks easier.',
+      'Parentheses are the super. They fire first, every single time.',
+      '× and ÷ share a rank — resolve them left to right, not strongest-first.',
+      'Exponents come second, right after parentheses. Square before you multiply.',
+      'A squared parenthesis: solve the inside completely, then apply the exponent.',
+      'Nested parentheses = innermost first. Peel it like layers.',
+      'Long expressions: identify every operation before you touch one. Plan the whole combo.',
+      'Negative intermediate results are fine. Keep the sign and keep going.',
+      'Full send: parentheses, exponents, ×÷ left to right, +− left to right. That is the whole game.'
+    ],
+    story: [
+      'Match starting. Bronze lobby, but everyone starts somewhere.',
+      'Two-game win streak. The ladder is moving.',
+      'Enemy team is stacked. Focus up.',
+      'You just got a triple. Trophies climbing fast.',
+      'Diamond lobby. The plays are cleaner up here.',
+      'Someone in chat said you got carried. Prove them wrong.',
+      'Epic range. Every match counts double now.',
+      'One loss from a rank down. Do not choke.',
+      'Mythic push. This is the grind you came for.',
+      'Legendary gate. Win this and it is on your profile forever.'
+    ],
+    rewards: ['Bronze 🥉','Silver 🥈','Gold 🥇','Diamond 💎','Epic 🟣','Mythic 🔴','Legendary 🌟','Masters 👑','Pro Badge 🎖️','Hall of Fame 🏛️'],
+    prizeWord: 'Trophies',
+    prizeEmoji: '🏆',
+    cheer: ['Clean.','Triple kill.','Trophies up!','That was a pro play.','No hesitation. Nice.','Star player.','Solo carried that one.','Textbook.'],
+    kind: ['Knocked out. Respawn and read the hint.','Close match. Check your order.','Lost that round — but rank is not gone.','They got you. Look at the walkthrough.']
+  }
+};
+
+const KID_ORDER = ['sydney', 'lucas', 'jordan'];
+const HINT_LABELS = {
+  parentheses: 'Look for the parentheses ( ). Whatever is inside gets solved first.',
+  exponents: 'There is a little raised number. That is an exponent — do it right after parentheses.',
+  'multiply-divide': 'Find the × or ÷ first. They always go before + and −.',
+  'add-subtract': 'Only + and − here, so just work left to right.'
+};
+const COACH_ADVICE = {
+  parentheses: 'Parentheses keep sneaking past. Rule: whatever is inside the ( ) gets finished completely before anything else touches it.',
+  exponents: 'Exponents are the tricky ones right now. A small raised 2 means "times itself" — and it happens before any multiplying.',
+  'multiply-divide': 'The big one to lock in: × and ÷ always happen before + and −, even when the + comes first on the page.',
+  'add-subtract': 'Watch the left-to-right rule. When it is only + and −, work strictly left to right — do not save the easy one for last.'
+};
+
+/* ------------------------- saved progress ------------------------- */
+const STORE_VERSION = 'mathquest.v3.';
+function blankSave(kidId) {
+  return {
+    level: KIDS[kidId].startLevel,
+    lifetimeCorrect: 0, lifetimeWrong: 0, bestStreak: 0,
+    rewards: [], missRules: {}, daysPlayed: [], lastDate: null, day: null
+  };
+}
+function loadSave(kidId) {
+  try {
+    const raw = localStorage.getItem(STORE_VERSION + kidId);
+    if (!raw) return blankSave(kidId);
+    const parsed = JSON.parse(raw);
+    return Object.assign(blankSave(kidId), parsed);
+  } catch (e) { return blankSave(kidId); }
+}
+function persist(kidId, save) {
+  try { localStorage.setItem(STORE_VERSION + kidId, JSON.stringify(save)); } catch (e) {}
+}
+
+/* How many questions in a day. The boys run the full set; Sydney always
+   gets a shorter day (an 8-year-old does not need a hundred of these to
+   learn the rule), rounded to whole waves. */
+const LENGTH_CHOICES = [20, 40, 80, 100];
+const DEFAULT_LENGTH = 80;
+function chosenLength() {
+  const raw = parseInt(localStorage.getItem(STORE_VERSION + 'length'), 10);
+  return LENGTH_CHOICES.indexOf(raw) !== -1 ? raw : DEFAULT_LENGTH;
+}
+function setChosenLength(n) {
+  try { localStorage.setItem(STORE_VERSION + 'length', String(n)); } catch (e) {}
+}
+function questionCount(kidId) {
+  const kid = KIDS[kidId], base = chosenLength();
+  if (!kid.shortDay) return base;
+  return Math.max(kid.waveSize * 2, Math.round((base * 0.4) / kid.waveSize) * kid.waveSize);
+}
+
+/* ------------------------- game state ------------------------- */
+const state = {
+  kidId: null, kid: null, save: null, today: dateKey(new Date()),
+  questions: [], index: 0, level: 1, streak: 0, bestStreak: 0,
+  correct: 0, wrong: 0, waveMisses: 0, waveCorrect: 0,
+  typed: '', hintStage: 0, askedAt: 0, bonus: false, rng: null
+};
+
+const $ = id => document.getElementById(id);
+
+function show(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  $(screenId).classList.add('on');
+  window.scrollTo(0, 0);
+}
+
+/* Build the whole day up front from the date seed, at the level the kid
+   is currently sitting at. Later questions are regenerated when their
+   level changes, so adapting mid-quest actually changes what they see. */
+function generateQuestion(kidId, level, salt) {
+  const kid = KIDS[kidId];
+  const rung = kid.ladder[Math.max(0, Math.min(kid.maxLevel, level) - 1)];
+  const cfg = Object.assign({}, kid.cfg, rung.cfg);
+  const rng = makeRng(state.today + '|' + kidId + '|L' + level + '|' + salt);
+  return buildProblem(rng, rung.shapes, cfg);
+}
+
+function buildDay(kidId, level, count, saltPrefix) {
+  const list = [];
+  for (let i = 0; i < count; i++) list.push(generateQuestion(kidId, level, saltPrefix + i));
+  return list;
+}
+
+/* ------------------------- home screen ------------------------- */
+function paintLengthPicker() {
+  const row = $('lenrow');
+  row.innerHTML = '';
+  LENGTH_CHOICES.forEach(n => {
+    const b = document.createElement('button');
+    b.textContent = n + ' questions';
+    if (n === chosenLength()) b.className = 'sel';
+    b.addEventListener('click', () => { setChosenLength(n); paintHome(); });
+    row.appendChild(b);
+  });
+  $('lennote').textContent = 'Lucas & Jordan: ' + questionCount('lucas') +
+    ' · Sydney: ' + questionCount('sydney') + ' (shorter day for an 8-year-old)';
+}
+
+function paintHome() {
+  $('datechip').textContent = 'Today\'s quest key · ' + state.today;
+  paintLengthPicker();
+  const holder = $('cards');
+  holder.innerHTML = '';
+  KID_ORDER.forEach(id => {
+    const kid = KIDS[id], save = loadSave(id);
+    const btn = document.createElement('button');
+    btn.className = 'kidcard';
+    btn.style.setProperty('--k', kid.color);
+    const doneToday = save.lastDate === state.today && save.day && save.day.finished;
+    btn.innerHTML =
+      '<span class="emoji">' + kid.emoji + '</span>' +
+      '<span class="mid"><span class="who">' + kid.name + '</span>' +
+      '<span class="sub">' + kid.tagline + '</span>' +
+      '<span class="sub">' + (doneToday ? '✅ Finished today · play a bonus round'
+        : (save.day && save.day.date === state.today ? '▶ Continue — question ' + (save.day.index + 1)
+        : '✨ Today\'s quest is ready')) + '</span></span>' +
+      '<span class="lvl"><b>' + save.level + '</b><span>Level</span></span>';
+    btn.addEventListener('click', () => startKid(id));
+    holder.appendChild(btn);
+  });
+}
+
+/* ------------------------- starting a quest ------------------------- */
+function startKid(kidId, forceBonus) {
+  state.kidId = kidId;
+  state.kid = KIDS[kidId];
+  state.save = loadSave(kidId);
+  state.level = state.save.level;
+  state.bestStreak = 0;
+  state.streak = 0;
+  state.waveMisses = 0;
+  state.waveCorrect = 0;
+  state.typed = '';
+  state.hintStage = 0;
+  state.bonus = !!forceBonus;
+
+  document.body.setAttribute('data-kid', kidId);
+
+  const saved = state.save.day;
+  const resumable = !forceBonus && saved && saved.date === state.today && !saved.finished;
+  if (resumable) {
+    state.index = saved.index;
+    state.correct = saved.correct;
+    state.wrong = saved.wrong;
+    state.level = saved.level || state.level;
+  } else {
+    state.index = 0; state.correct = 0; state.wrong = 0;
+  }
+
+  const salt = forceBonus ? 'bonus' + Date.now() + '-' : 'q';
+  state.saltPrefix = salt;
+  state.total = questionCount(kidId);
+  if (state.index >= state.total) { state.index = 0; state.correct = 0; state.wrong = 0; }
+  state.questions = buildDay(kidId, state.level, state.total, salt);
+
+  $('c-who').innerHTML = state.kid.emoji + ' <b>' + state.kid.name + '</b>';
+  show('s-play');
+  askQuestion();
+}
+
+/* Regenerate every question the kid has not seen yet, at the new level. */
+function relevelUpcoming() {
+  for (let i = state.index; i < state.questions.length; i++) {
+    state.questions[i] = generateQuestion(state.kidId, state.level, state.saltPrefix + i);
+  }
+}
+
+/* ------------------------- asking ------------------------- */
+function askQuestion() {
+  const kid = state.kid;
+  if (state.index >= state.total) return finishDay();
+
+  const q = state.questions[state.index];
+  const waveIndex = Math.floor(state.index / kid.waveSize);
+  const waveCount = Math.ceil(state.total / kid.waveSize);
+
+  $('qnum').textContent = 'Question ' + (state.index + 1) + ' of ' + state.total;
+  $('exprtext').textContent = q.text;
+  $('answerbox').textContent = '';
+  $('answerbox').className = 'answer empty';
+  $('feedback').textContent = '';
+  $('feedback').className = 'feedback';
+  $('hintbox').style.display = 'none';
+  $('c-level').textContent = 'Level ' + state.level;
+  $('c-score').textContent = state.correct + ' ✅';
+  $('storytext').textContent = kid.story[Math.min(waveIndex, kid.story.length - 1)];
+  $('progbar').style.width = ((state.index / state.total) * 100) + '%';
+  $('progtext').textContent = 'Wave ' + (waveIndex + 1) + ' of ' + waveCount;
+  $('streaktext').textContent = state.streak >= 2 ? '🔥 ' + state.streak + ' in a row' : '';
+  $('hintkey').textContent = '💡 Hint';
+
+  state.typed = '';
+  state.hintStage = 0;
+  state.locked = false;
+  state.askedAt = Date.now();
+}
+
+function paintTyped() {
+  const box = $('answerbox');
+  box.textContent = state.typed;
+  box.className = 'answer' + (state.typed === '' || state.typed === '-' ? ' empty' : '');
+}
+
+/* ------------------------- hints ------------------------- */
+function giveHint() {
+  const q = state.questions[state.index];
+  state.hintStage = Math.min(3, state.hintStage + 1);
+  const box = $('hintbox');
+  box.style.display = 'block';
+
+  if (state.hintStage === 1) {
+    const first = q.steps[0];
+    const ruleKey = first.rule === 'Parentheses' ? 'parentheses'
+      : first.rule === 'Exponents' ? 'exponents'
+      : (first.rule === 'Multiply' || first.rule === 'Divide') ? 'multiply-divide' : 'add-subtract';
+    $('hinttitle').textContent = 'Hint 1 — where to start';
+    $('hinttext').innerHTML = HINT_LABELS[ruleKey];
+    $('hintkey').textContent = '💡 More';
+  } else if (state.hintStage === 2) {
+    const first = q.steps[0];
+    $('hinttitle').textContent = 'Hint 2 — take the first step';
+    $('hinttext').innerHTML = 'Start with <code>' + first.text + '</code><br>' +
+      'Now the problem looks like <code>' + first.after + '</code><br>Finish it from there!';
+    $('hintkey').textContent = '💡 Show me';
+  } else {
+    $('hinttitle').textContent = 'Full walkthrough';
+    $('hinttext').innerHTML = '<ol>' + q.steps.map(s =>
+      '<li><b>' + s.rule + ':</b> <code>' + s.text + '</code>' +
+      (s.after && s.after !== String(q.answer) ? ' → leaves <code>' + s.after + '</code>' : '') + '</li>'
+    ).join('') + '</ol>';
+    $('hintkey').textContent = '💡 Hint';
+  }
+}
+
+/* ------------------------- answering ------------------------- */
+function submitAnswer() {
+  // Between a correct answer and the next question there is a celebration
+  // pause. Ignore input during it, or an excited kid mashing keys can fire a
+  // second answer at a question they have already finished.
+  if (state.locked) return;
+  if (state.typed === '' || state.typed === '-') return;
+  const q = state.questions[state.index];
+  const given = parseInt(state.typed, 10);
+  const seconds = (Date.now() - state.askedAt) / 1000;
+  const kid = state.kid;
+
+  if (given === q.answer) {
+    state.locked = true;
+    state.correct++; state.waveCorrect++; state.streak++;
+    state.bestStreak = Math.max(state.bestStreak, state.streak);
+    state.save.lifetimeCorrect++;
+    $('answerbox').classList.add('flash-good');
+    $('feedback').className = 'feedback good';
+    const quick = seconds <= kid.pace * 0.55;
+    $('feedback').textContent = (quick ? '⚡ ' : '') + pickFrom(kid.cheer) +
+      (quick ? (state.kidId === 'lucas' ? ' Perfect cast!' : ' Lightning fast!') : '');
+    beep(880, 0.09); if (quick) setTimeout(() => beep(1320, 0.09), 90);
+    confetti(quick ? 14 : 8);
+
+    // Adapt up: a real streak, and not crawling through them.
+    if (state.streak >= kid.upStreak && seconds <= kid.pace && state.level < kid.maxLevel) {
+      state.level++; state.streak = 0;
+      relevelUpcoming();
+      setTimeout(() => {
+        $('feedback').textContent = '⬆️ LEVEL ' + state.level + '! ' +
+          (state.kidId === 'sydney' ? 'Fancier drinks unlocked!'
+           : state.kidId === 'lucas' ? 'Deeper water — bigger fish.'
+           : 'Rank up. Harder lobby.');
+        beep(660, 0.1); setTimeout(() => beep(990, 0.14), 110);
+      }, 550);
+    }
+    setTimeout(nextQuestion, state.streak === 0 ? 1350 : 750);
+
+  } else {
+    state.wrong++; state.waveMisses++; state.streak = 0;
+    state.save.lifetimeWrong++;
+    q.rules.forEach(r => { state.save.missRules[r] = (state.save.missRules[r] || 0) + 1; });
+    $('qcard').classList.add('shake');
+    setTimeout(() => $('qcard').classList.remove('shake'), 420);
+    $('feedback').className = 'feedback bad';
+    $('feedback').textContent = pickFrom(kid.kind);
+    beep(220, 0.16);
+
+    // Adapt down before frustration sets in.
+    if (state.waveMisses >= kid.downMisses && state.level > 1) {
+      state.level--; state.waveMisses = 0;
+      relevelUpcoming();
+      $('c-level').textContent = 'Level ' + state.level;
+    }
+
+    // Two misses on the same question hands over the whole walkthrough.
+    state.hintStage = Math.min(state.hintStage, 1);
+    giveHint();
+    if ((q.attempts = (q.attempts || 0) + 1) >= 2) {
+      state.hintStage = 2; giveHint();
+      setTimeout(() => {
+        $('feedback').textContent = 'The answer is ' + q.answer + '. Type it in to keep going!';
+      }, 400);
+    }
+    state.typed = '';
+    paintTyped();
+    return; // stay on this question until they get it
+  }
+}
+
+function nextQuestion() {
+  state.index++;
+  saveProgress(false);
+  const kid = state.kid;
+  if (state.index >= state.total) return finishDay();
+  if (state.index % kid.waveSize === 0) return showWave();
+  askQuestion();
+}
+
+function saveProgress(finished) {
+  state.save.level = state.level;
+  state.save.bestStreak = Math.max(state.save.bestStreak, state.bestStreak);
+  state.save.lastDate = state.today;
+  if (!state.bonus) {
+    state.save.day = {
+      date: state.today, index: state.index, correct: state.correct,
+      wrong: state.wrong, level: state.level, finished: !!finished
+    };
+  }
+  if (finished && state.save.daysPlayed.indexOf(state.today) === -1) {
+    state.save.daysPlayed.push(state.today);
+  }
+  persist(state.kidId, state.save);
+}
+
+/* ------------------------- wave + day screens ------------------------- */
+function showWave() {
+  const kid = state.kid;
+  const waveIndex = Math.floor(state.index / kid.waveSize); // the wave just finished == waveIndex-1
+  const justFinished = waveIndex - 1;
+  const prize = kid.rewards[Math.min(justFinished, kid.rewards.length - 1)];
+
+  if (state.save.rewards.indexOf(prize) === -1) state.save.rewards.push(prize);
+  saveProgress(false);
+
+  $('w-emoji').textContent = kid.prizeEmoji;
+  $('w-title').textContent = 'Wave ' + (justFinished + 1) + ' complete!';
+  $('w-text').textContent = state.waveCorrect + ' of ' + kid.waveSize + ' on the first try. ' +
+    (state.kidId === 'sydney' ? 'The customers are so happy.'
+     : state.kidId === 'lucas' ? 'Time to move to a new spot.'
+     : 'Queueing the next match.');
+  $('w-prize').textContent = '🎁 Unlocked: ' + prize;
+  $('w-right').textContent = state.correct;
+  $('w-level').textContent = state.level;
+  $('w-streak').textContent = state.bestStreak;
+  $('w-lesson').textContent = kid.lessons[Math.min(state.level - 1, kid.lessons.length - 1)];
+  state.waveCorrect = 0; state.waveMisses = 0;
+  confetti(26);
+  show('s-wave');
+}
+
+function finishDay() {
+  const kid = state.kid;
+  saveProgress(true);
+  const total = state.correct + state.wrong;
+  const pct = total ? Math.round((state.correct / total) * 100) : 100;
+
+  $('d-emoji').textContent = kid.emoji;
+  $('d-title').textContent = state.bonus ? 'Bonus round done!' : 'Quest complete, ' + kid.name + '!';
+  $('d-text').textContent =
+    (state.kidId === 'sydney' ? 'Stripes is closing the shop. You served every customer today!'
+     : state.kidId === 'lucas' ? 'Boat\'s back at the dock. What a day on the water.'
+     : 'Session over. Trophies locked in.') +
+    ' You got ' + pct + '% right on the first try.';
+  $('d-right').textContent = state.correct;
+  $('d-level').textContent = state.level;
+  $('d-streak').textContent = state.bestStreak;
+
+  $('d-shelf').innerHTML = state.save.rewards.map(r => '<span>' + r + '</span>').join('');
+
+  const misses = state.save.missRules;
+  const worst = Object.keys(misses).sort((a, b) => misses[b] - misses[a])[0];
+  $('d-coach').innerHTML = '<h3>Coach notes</h3>' +
+    (worst && misses[worst] > 1
+      ? COACH_ADVICE[worst] + ' <br><br>Everything else is looking strong — see you tomorrow for a fresh quest.'
+      : 'Nothing to fix today. Clean run. Come back tomorrow for a brand-new quest.') +
+    '<br><br><b>Days played:</b> ' + state.save.daysPlayed.length +
+    ' · <b>Lifetime correct:</b> ' + state.save.lifetimeCorrect;
+
+  confetti(46);
+  show('s-done');
+}
+
+/* ------------------------- little effects ------------------------- */
+function pickFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+let audioCtx = null;
+function beep(freq, seconds) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.type = 'triangle'; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.14, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + seconds);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + seconds);
+  } catch (e) {}
+}
+
+function confetti(count) {
+  const kid = state.kid;
+  const pieces = kid ? [kid.emoji, kid.prizeEmoji, '⭐', '✨', '🎉'] : ['⭐', '✨'];
+  const layer = document.createElement('div');
+  layer.className = 'burst';
+  for (let i = 0; i < count; i++) {
+    const bit = document.createElement('i');
+    bit.textContent = pieces[Math.floor(Math.random() * pieces.length)];
+    bit.style.left = (10 + Math.random() * 80) + 'vw';
+    bit.style.top = (30 + Math.random() * 40) + 'vh';
+    bit.style.setProperty('--dx', (Math.random() * 260 - 130) + 'px');
+    bit.style.setProperty('--dy', (-160 - Math.random() * 220) + 'px');
+    bit.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+    bit.style.animationDelay = (Math.random() * 0.18) + 's';
+    layer.appendChild(bit);
+  }
+  document.body.appendChild(layer);
+  setTimeout(() => layer.remove(), 1500);
+}
+
+/* ------------------------- input wiring ------------------------- */
+document.querySelectorAll('.key').forEach(key => {
+  key.addEventListener('click', () => {
+    const k = key.getAttribute('data-k');
+    if (k === 'go') submitAnswer();
+    else if (k === 'hint') giveHint();
+    else if (k === 'del') { state.typed = state.typed.slice(0, -1); paintTyped(); }
+    else if (k === '-') { if (state.typed === '') { state.typed = '-'; paintTyped(); } }
+    else { if (state.typed.replace('-', '').length < 5) { state.typed += k; paintTyped(); } }
+  });
+});
+
+document.addEventListener('keydown', e => {
+  if (!$('s-play').classList.contains('on')) return;
+  if (e.key >= '0' && e.key <= '9') { if (state.typed.replace('-','').length < 5) { state.typed += e.key; paintTyped(); } }
+  else if (e.key === 'Backspace') { state.typed = state.typed.slice(0, -1); paintTyped(); e.preventDefault(); }
+  else if (e.key === 'Enter') { submitAnswer(); e.preventDefault(); }
+  else if (e.key === '-' && state.typed === '') { state.typed = '-'; paintTyped(); }
+  else if (e.key === 'h' || e.key === 'H') giveHint();
+});
+
+$('btn-home').addEventListener('click', () => { saveProgress(false); paintHome(); document.body.removeAttribute('data-kid'); show('s-home'); });
+$('w-next').addEventListener('click', () => { show('s-play'); askQuestion(); });
+$('d-home').addEventListener('click', () => { paintHome(); document.body.removeAttribute('data-kid'); show('s-home'); });
+$('d-again').addEventListener('click', () => startKid(state.kidId, true));
+
+/* ------------------------- boot ------------------------- */
+paintHome();
+$('version').textContent = 'Math Quest · seeded by date ' + state.today + ' (DD/MM/YY) · progress saves on this device';
+</script>
+<!--APP-END-->
+</body>
+</html>
