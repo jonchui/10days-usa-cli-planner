@@ -100,6 +100,28 @@ _BLOCKED_TOOLS = (
     "Bash Read Write Edit NotebookEdit Glob Grep WebFetch WebSearch Task TodoWrite"
 )
 
+# When PromptLab is itself launched from inside a Claude Code session, the
+# parent exports its own session identity. Every subprocess would inherit it
+# and several agents would write to one transcript at once, which fails with an
+# is_error result and zero tokens billed. Drop the identity, keep the auth.
+_INHERITED_SESSION_VARS = (
+    "CLAUDE_CODE_SESSION_ID",
+    "CLAUDE_CODE_CHILD_SESSION",
+    "CLAUDE_CODE_ENTRYPOINT",
+    "CLAUDE_PID",
+    "CLAUDE_AFTER_LAST_COMPACT",
+    "CLAUDE_AUTO_BACKGROUND_TASKS",
+    "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD",
+)
+
+
+def isolated_env() -> dict[str, str]:
+    """A copy of os.environ with the parent session's identity removed."""
+    env = os.environ.copy()
+    for key in _INHERITED_SESSION_VARS:
+        env.pop(key, None)
+    return env
+
 
 class ClaudeCLIBackend(Backend):
     """Headless `claude -p`, using whatever plan the CLI is logged into.
@@ -149,15 +171,20 @@ class ClaudeCLIBackend(Backend):
                 text=True,
                 timeout=self.timeout,
                 cwd=tempfile.gettempdir(),
+                env=isolated_env(),
             )
         except subprocess.TimeoutExpired:
             return Completion(text="", error=f"timeout after {self.timeout:.0f}s")
 
-        if proc.returncode != 0:
-            detail = (proc.stderr or proc.stdout or "").strip()[:400]
-            return Completion(text="", error=f"exit {proc.returncode}: {detail}")
-
         raw = proc.stdout.strip()
+
+        if proc.returncode != 0:
+            # A failing run still prints its JSON envelope; surface the human
+            # message from it rather than a wall of usage counters.
+            return Completion(
+                text="", error=f"exit {proc.returncode}: {_cli_error_message(raw, proc.stderr)}"
+            )
+
         try:
             payload = json.loads(raw)
         except json.JSONDecodeError:
@@ -196,13 +223,20 @@ class CodexCLIBackend(Backend):
         body = f"{system}\n\n---\n\n{prompt}" if system else prompt
         try:
             proc = subprocess.run(
-                argv, input=body, capture_output=True, text=True, timeout=self.timeout
+                argv,
+                input=body,
+                capture_output=True,
+                text=True,
+                timeout=self.timeout,
+                env=isolated_env(),
             )
         except subprocess.TimeoutExpired:
             return Completion(text="", error=f"timeout after {self.timeout:.0f}s")
         if proc.returncode != 0:
-            detail = (proc.stderr or proc.stdout or "").strip()[:400]
-            return Completion(text="", error=f"exit {proc.returncode}: {detail}")
+            return Completion(
+                text="",
+                error=f"exit {proc.returncode}: {_cli_error_message(proc.stdout, proc.stderr)}",
+            )
         return Completion(text=_strip_codex_chrome(proc.stdout))
 
 
@@ -231,6 +265,21 @@ class MockBackend(Backend):
         if "PROMPT ENGINEER" in system:
             return Completion(text=prompt.split("---", 1)[-1].strip() + f"\n\nAlso: be concrete ({digest[:6]}).")
         return Completion(text=f"[mock output {digest[:8]}]\n\n{prompt[:280]}")
+
+
+def _cli_error_message(stdout: str, stderr: str) -> str:
+    """Pull the readable failure reason out of a CLI's JSON error envelope."""
+    try:
+        payload = json.loads(stdout)
+    except (json.JSONDecodeError, TypeError):
+        payload = None
+    if isinstance(payload, dict):
+        message = str(payload.get("result") or payload.get("error") or "").strip()
+        reason = str(payload.get("subtype") or payload.get("terminal_reason") or "").strip()
+        detail = " / ".join(part for part in (message, reason) if part)
+        if detail:
+            return detail[:300]
+    return ((stderr or stdout or "no output").strip())[:300]
 
 
 def _strip_codex_chrome(stdout: str) -> str:

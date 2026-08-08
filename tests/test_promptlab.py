@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -16,7 +18,9 @@ from promptlab.backends import (  # noqa: E402
     BudgetExhausted,
     CachedClient,
     MockBackend,
+    _cli_error_message,
     build_backend,
+    isolated_env,
 )
 from promptlab.cli import main  # noqa: E402
 from promptlab.config import ConfigError, PromptSpec, load_config  # noqa: E402
@@ -132,6 +136,49 @@ class CacheAndBudgetTests(TempRun):
     def test_unknown_backend_rejected(self) -> None:
         with self.assertRaises(ValueError):
             build_backend("nope", "m", 10, [])
+
+
+class SubprocessEnvironmentTests(unittest.TestCase):
+    """Concurrent agents must not inherit one parent session identity."""
+
+    def test_isolated_env_drops_session_identity_but_keeps_auth(self) -> None:
+        with unittest.mock.patch.dict(
+            os.environ,
+            {
+                "CLAUDE_CODE_SESSION_ID": "shared-session",
+                "CLAUDE_CODE_CHILD_SESSION": "1",
+                "CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR": "4",
+                "PATH": os.environ.get("PATH", ""),
+            },
+            clear=False,
+        ):
+            env = isolated_env()
+            self.assertNotIn("CLAUDE_CODE_SESSION_ID", env)
+            self.assertNotIn("CLAUDE_CODE_CHILD_SESSION", env)
+            self.assertEqual(env["CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR"], "4")
+            self.assertIn("PATH", env)
+
+    def test_isolated_env_is_a_copy(self) -> None:
+        isolated_env()["PROMPTLAB_PROBE"] = "x"
+        self.assertNotIn("PROMPTLAB_PROBE", os.environ)
+
+
+class CliErrorMessageTests(unittest.TestCase):
+    def test_reads_message_from_json_envelope(self) -> None:
+        envelope = json.dumps(
+            {"is_error": True, "result": "rate limit hit", "subtype": "error_max_turns",
+             "usage": {"input_tokens": 0}}
+        )
+        message = _cli_error_message(envelope, "")
+        self.assertIn("rate limit hit", message)
+        self.assertIn("error_max_turns", message)
+        self.assertNotIn("input_tokens", message)
+
+    def test_falls_back_to_stderr(self) -> None:
+        self.assertIn("boom", _cli_error_message("not json", "boom"))
+
+    def test_handles_no_output_at_all(self) -> None:
+        self.assertEqual(_cli_error_message("", ""), "no output")
 
 
 class JudgeTests(TempRun):
