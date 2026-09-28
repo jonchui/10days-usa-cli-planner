@@ -19,7 +19,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from common import TESTSET, format_input, load_quotes  # noqa: E402
 
-SYSTEM = (ROOT / "guppy" / "prompts" / "v0.1.md").read_text(encoding="utf-8")
+PROMPT_FILE = sorted((ROOT / "guppy" / "prompts").glob("v*.md"))[-1]  # newest prompt version
+SYSTEM = PROMPT_FILE.read_text(encoding="utf-8")
 
 
 def build(recs: list[dict], test_ids: set[str], include_recalled: bool) -> list[dict]:
@@ -51,7 +52,7 @@ def main(argv=None):
     with open(a.out, "w", encoding="utf-8") as f:
         for row in rows:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
-    print(f"{len(rows)} training examples -> {a.out} (excluded {len(test_ids)} test ids)")
+    print(f"{len(rows)} training examples -> {a.out} (system prompt {PROMPT_FILE.name}, excluded {len(test_ids)} test ids)")
 
 
 if __name__ == "__main__":

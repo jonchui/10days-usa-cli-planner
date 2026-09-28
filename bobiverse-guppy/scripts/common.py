@@ -87,11 +87,21 @@ def score_pair(pred: str, gold: str) -> dict:
     }
 
 
+_BRACKET_LINE = re.compile(r"\[[^\[\]]{1,600}\]")
+
+
+def eval_context(rec: dict) -> str:
+    """Context safe to show the model: only the text BEFORE the exchange, with
+    earlier GUPPI lines redacted so no record leaks another record's gold."""
+    ctx = rec["context"].split(" ▸ ")[0]
+    return _BRACKET_LINE.sub("[…]", ctx).strip()
+
+
 def format_input(rec: dict) -> str:
     """What the model under test sees: setting + context + the actual input."""
     return (
         f"Setting: {rec['setting']}\n"
-        f"Context: {rec['context']}\n"
+        f"Context: {eval_context(rec)}\n"
         f"Input type: {rec['input_type']}\n"
         f"{rec['bob']}: {rec['input']}"
     )

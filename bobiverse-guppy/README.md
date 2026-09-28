@@ -48,9 +48,25 @@ python scripts/ingest.py data/candidates.jsonl --min-confidence 0.8
 make all
 ```
 
-Only `provenance: verified` records count toward the headline score. Records
-marked `recalled` were written from memory to bootstrap the pipeline and must
-be replaced or confirmed against the text.
+Only `provenance: verified` records count toward the headline score. Book 1
+is done: 146 verified exchanges with PDF page numbers (the 10 `recalled`
+bootstrap seeds were retired once the text arrived).
+
+## Running a Guppy version without an API key (replay backend)
+
+Any model can be scored: generate answers for `results/inputs-testset.json`
+(prompts only, no gold), save them as `{id: output}` JSON, optionally grade
+them with the judge prompt in `guppy/api_backend.py` into `{id: true/false}`,
+then:
+
+```bash
+python scripts/run_eval.py --backend replay:results/outputs-v0.3-cowork.json \
+    --judge-file results/judge-v0.3-cowork.json --label v0.3-cowork
+```
+
+`format_input()` shows the model only the text *before* the exchange, with
+earlier GUPPI lines redacted, so no test record leaks another's answer. New
+prompt versions are leak-checked against the test set before they are run.
 
 ## Scoring
 

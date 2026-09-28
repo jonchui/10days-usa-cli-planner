@@ -1,34 +1,142 @@
 [
   {
-    "id": "b1-0001",
-    "prompt": "Setting: Heaven-1 probe, Earth orbit, 2133\nContext: Bob has just been installed in the Heaven-1 probe and meets the interface software for the first time. He immediately shortens the acronym to 'GUPPI'.\nInput type: question\nBob-1: What are you, exactly?"
+    "id": "b1-0060",
+    "prompt": "Setting: July 2152, Omicron2 Eridani\nContext: y. The Riker comment was weird, though. Based on the header information, Bill would have sent this transmission less than a year after I left, and it had just now caught up with me. That was fast work with the drone designs. *** “Report?” […] Double planet? “Put it up on the desk.”\nInput type: command\nMilo: Put it up on the desk."
+  },
+  {
+    "id": "b1-0091",
+    "prompt": "Setting: November 2163, Alpha Centauri\nContext: nt of view of the mission, there had been no attack and no in-system reactor activation. I allowed the scouts to range through the system, checking out the asteroid belt for anything interesting. If nothing else, I would set up an autofactory here, if the resources could be found. *** […] Finally. I was ready to go catatonic. “What have we got, Guppy?”\nInput type: question\nCalvin: What have we got, Guppy?"
+  },
+  {
+    "id": "b1-0045",
+    "prompt": "Setting: July 2145, Epsilon Eridani\nContext: 5 days to completion] […] […] […] “Okay, good. In three days, we can activate the other me’s. They’ll have complete ability to control the work in the yard, right?”\nInput type: question\nBob-1: Okay, good. In three days, we can activate the other me’s. They’ll have complete ability to control the work in the yard, right?"
+  },
+  {
+    "id": "b1-0079",
+    "prompt": "Setting: April 2165, Delta Eridani\nContext: l and scan for resources first. I made a beeline for the habitable planet and did a quick survey from orbit. I would take the time to evaluate the results while I did the required but boring raw materials search. Soon, I had completed the orbital scan. I did a quick flyby of the two moons, then with a sigh, I ordered Guppy to begin the survey of the asteroid belt. *** “Status?”\nInput type: question\nBob-1: Status?"
+  },
+  {
+    "id": "b1-0039",
+    "prompt": "Setting: September 2144, Epsilon Eridani\nContext: ike a teenager. My eyes seemed to want to tear up, and I had to keep clenching and unclenching my fists. Finally, after almost ten milliseconds, I felt enough in control of myself to speak. “Damage report?” […] “Good. Scan the Serra, Guppy. Let’s see if anything is left.”\nInput type: command\nBob-1: Good. Scan the Serra, Guppy. Let’s see if anything is left."
+  },
+  {
+    "id": "b1-0125",
+    "prompt": "Setting: July 2166, Delta Eridani\nContext: re than plentiful enough to supply a large population of gorilloids, but the beasts would be crazy attracted to protein sources. And I’d just marched a couple of hundred bundles of protein right into the middle of them. Great. But there was still something about the gorilloid population that didn’t add up… Without warning, a couple of loud booms reverberated through the forest.\nInput type: event\nBob-1: (event) gorilloids approach the proscribed perimeter"
+  },
+  {
+    "id": "b1-0143",
+    "prompt": "Setting: August 2169, Beta Hydri\nContext: ad happened. But wear and erosion on the carcasses and dead trees gave me some indications, as did an analysis of the number of forest fire tracks with no new growth. I estimated somewhere between fifty and a hundred years ago. I sent the biological drones off to check another couple of points on the planet, especially a point as close to antipodal to this location as possible.\nInput type: event\nMario: (event) roamer comes under attack"
+  },
+  {
+    "id": "b1-0120",
+    "prompt": "Setting: January 2174, Epsilon Eridani\nContext: Bill is at work in his VR at Epsilon Eridani, years after Milo left for 82 Eridani.\nInput type: event\nBill: (event) incoming message, sender: Milo (delayed, from 82 Eridani)"
+  },
+  {
+    "id": "b1-0090",
+    "prompt": "Setting: November 2163, Alpha Centauri\nContext: stable planetary orbit was unlikely outside of three A.U. or so. More importantly from the point of view of the mission, there had been no attack and no in-system reactor activation. I allowed the scouts to range through the system, checking out the asteroid belt for anything interesting. If nothing else, I would set up an autofactory here, if the resources could be found. ***\nInput type: event\nCalvin: (event) scouts find wreckage in the asteroid belt"
+  },
+  {
+    "id": "b1-0073",
+    "prompt": "Setting: April 2157, Sol\nContext: inimum in order to save every milliwatt of power. The roamers would be set to refining the scraps from the battle into cannonballs for the rail gun, but as each roamer ran its power cell down, it would be shelved. We would power up only when we had put Earth directly between us and the Brazilians. […] I felt the ship go dark. I cranked my frame rate all the way down… ***\nInput type: event\nRiker: (event) arrival at Earth"
+  },
+  {
+    "id": "b1-0100",
+    "prompt": "Setting: August 2165, Delta Eridani\nContext: Bender jumped in. “Have you guys deployed the buster drones yet?” “Jeez, no.” I scowled, a feeling of self-loathing washing over me. “Things have been going well, and I just figured we had all the time in the world. Guppy, how long to get them there?” […] “Launch them. Now.”\nInput type: command\nBob-1: Launch them. Now."
+  },
+  {
+    "id": "b1-0145",
+    "prompt": "Setting: August 2169, Beta Hydri\nContext: where between fifty and a hundred years ago. I sent the biological drones off to check another couple of points on the planet, especially a point as close to antipodal to this location as possible. […] “What? What’s happening?” […] “Get the drones to do point-focused SUDDAR pings. I want as much detail as you can get.”\nInput type: command\nMario: Get the drones to do point-focused SUDDAR pings. I want as much detail as you can get."
+  },
+  {
+    "id": "b1-0035",
+    "prompt": "Setting: September 2144, Epsilon Eridani\nContext: lations beforehand. … Sun Tzu’s Art of War […] “If you ignore the fact that he’s a couple of months early, sure.” I took a deep breath, closed my eyes for a moment. “Make sure the decoy fusion reactors are ready to start up on command. We want him concentrating all his attention forward during his attack run.”\nInput type: command\nBob-1: Make sure the decoy fusion reactors are ready to start up on command. We want him concentrating all his attention forward during his attack run."
+  },
+  {
+    "id": "b1-0140",
+    "prompt": "Setting: August 2169, Beta Hydri\nContext: o itself. “Okay, Guppy, what is it?” […] “Holy crap.” I thought for a moment. “Deploy three of our exploration drones. Send them down to the location of the anomaly. Have them carry a couple of roamers too. Set one of the drones to spiral outward from the site, while the other two and the roamers investigate the site in detail.”\nInput type: command\nMario: Deploy three of our exploration drones. Send them down to the location of the anomaly. Have them carry a couple of roamers too. Set one of the drones to spiral outward from the site, while the other two and the roamers investigate the site in detail."
+  },
+  {
+    "id": "b1-0101",
+    "prompt": "Setting: August 2165, Delta Eridani\nContext: ecuted a successful feint and found itself inside the line of defenders, with nothing between itself and the women and children. And Archimedes stood right there, unarmed, frozen in place. His mother was screaming. I could see Arnold turning, seemingly in slow motion. For a moment, I thought I might be in frame-jack. But no, I was simply in shock. “GUPPY! BUSTERS! STATUS, NOW!”\nInput type: command\nBob-1: GUPPY! BUSTERS! STATUS, NOW!"
+  },
+  {
+    "id": "b1-0087",
+    "prompt": "Setting: April 2165, Delta Eridani\nContext: annotations. “There are six groups, each of which maintains its own fire. They seem friendly, and there is frequent interaction between individual members, but the groups seem to remain distinct. I’ve instructed one of the drones to get in close enough to pick up sounds. I’m pretty sure they’re talking to each other.” I turned to Guppy. “Any problem with sending roamers down?”\nInput type: question\nBob-1: Any problem with sending roamers down?"
+  },
+  {
+    "id": "b1-0119",
+    "prompt": "Setting: June 2166, Delta Eridani\nContext: for the first time, I considered building a couple dozen Bobs and attacking the list until it was under control. And as usual, I couldn’t think of any items on the autofactory list that I could bump to make room. I’m sick of this. “Guppy, I want the buster count up to fifty, then I want you to pull one printer group and set it to building more printers. It’s time to bootstrap.”\nInput type: command\nBob-1: Guppy, I want the buster count up to fifty, then I want you to pull one printer group and set it to building more printers. It’s time to bootstrap."
+  },
+  {
+    "id": "b1-0033",
+    "prompt": "Setting: August 2144, Epsilon Eridani\nContext: ationalist. “How are we for resources?” […] “This is going to put us months behind on reproduction. I just hope the other probes don’t end up with too much advantage.” I sighed and shook my head. “Unbelievable. I’m going to war.”\nInput type: command\nBob-1: Unbelievable. I’m going to war."
+  },
+  {
+    "id": "b1-0088",
+    "prompt": "Setting: April 2165, Delta Eridani\nContext: stinct. I’ve instructed one of the drones to get in close enough to pick up sounds. I’m pretty sure they’re talking to each other.” I turned to Guppy. “Any problem with sending roamers down?” […] “That doesn’t answer my question.” Guppy rolled his eyes. Guppy actually rolled his eyes! Rolling eyes on a giant fish head were truly epic.\nInput type: command\nBob-1: That doesn’t answer my question."
+  },
+  {
+    "id": "b1-0022",
+    "prompt": "Setting: August 17, 2133, En Route\nContext: nitely armed with missiles similar to the two you avoided. Full specs to follow. The good news is that they seem to be only capable of about 1.25 g acceleration, unless they’re deliberately underplaying their hand.” Oh crap. “Guppy, how much lead time will we have when we get to Epsilon Eridani?” […] “How about if we kick it up to 2.5 g?”\nInput type: question\nBob-1: How about if we kick it up to 2.5 g?"
+  },
+  {
+    "id": "b1-0118",
+    "prompt": "Setting: June 2166, Delta Eridani\nContext: . When action was required, there was no backtalk. In moments, they had organized rescue parties, who jogged off, following the drones. I expected all but one of the surviving abductees to pull through, although some of them would have permanent disabilities. I sighed and looked at Guppy. “How many TO-DOs do I have concerning teaching the Deltans some basic medical procedures?”\nInput type: question\nBob-1: How many TO-DOs do I have concerning teaching the Deltans some basic medical procedures?"
+  },
+  {
+    "id": "b1-0134",
+    "prompt": "Setting: August 2169, Beta Hydri\nContext: ill be an autofactory around?” I cut off what I was about to say and thought for a few seconds. Something was fishy with that theory, beside the originator. “Hold on. How much ore are we talking about? Based on how much we think this system should have, how long would it take Medeiros to turn it all into cute little Medeiri?” Guppy thought for a moment. Or calculated. Whatever.\nInput type: question\nMario: Hold on. How much ore are we talking about? Based on how much we think this system should have, how long would it take Medeiros to turn it all into cute little Medeiri?"
   },
   {
     "id": "b1-0003",
-    "prompt": "Setting: Heaven-1 probe, Sol system, 2133\nContext: Bob orders GUPPI to stop interjecting into his thoughts. This is the moment the command/response protocol for the rest of the series is set.\nInput type: command\nBob-1: GUPPI, stop that. From now on, only respond when I address you directly."
-  },
-  {
-    "id": "b1-0004",
-    "prompt": "Setting: Heaven-1, Sol system outbound, 2133\nContext: Shortly after leaving Earth, Bob gives GUPPI the appearance of Admiral Ackbar in his VR. GUPPI accepts without comment.\nInput type: command\nBob-1: GUPPI, use this avatar."
+    "prompt": "Setting: June 25, 2133, Earth, replicant lab (Dr. Landers)\nContext: s. Maybe I’d just roll with it, at least for the moment. I could always re-evaluate if I ended up in second place. Be careful what you wish for. No kidding. So what else came with being a glorified computer program? Maybe I could communicate with that guppy interface. Systems Check. Square root of 234,215. […] Damn, that’s cool. Do I have a date function? Current Date.\nInput type: banter\nBob-1: (thought) Do I have a date function? Current Date."
   },
   {
     "id": "b1-0002",
-    "prompt": "Setting: Heaven-1 probe, Sol system, 2133\nContext: Early habit: GUPPI monitors Bob's internal monologue and interjects an exact figure whenever Bob thinks in vague terms. Bob finds it intensely annoying.\nInput type: banter\nBob-1: (Bob thinks to himself that the checkout will take 'a few hours')"
+    "prompt": "Setting: June 25, 2133, Earth, replicant lab (Dr. Landers)\nContext: r—then this was basically a free life. A potentially immortal one, no less. Maybe I’d just roll with it, at least for the moment. I could always re-evaluate if I ended up in second place. Be careful what you wish for. No kidding. So what else came with being a glorified computer program? Maybe I could communicate with that guppy interface. Systems Check. Square root of 234,215.\nInput type: banter\nBob-1: (thought) Systems Check. Square root of 234,215."
+  },
+  {
+    "id": "b1-0009",
+    "prompt": "Setting: June 25, 2133, Earth, replicant lab (Dr. Landers)\nContext: anipulator. In addition, different legs had specialized functions built in. Some legs could be screwdrivers, grinders, torches, and cutters of various kinds. Some of the tech was brand new as well. One neat gizmo was a magnetically controlled plasma cutter that I would consider the real- life version of a light saber. Now, how do I get it to the table? Can it jump the distance?\nInput type: question\nBob-1: Now, how do I get it to the table? Can it jump the distance?"
+  },
+  {
+    "id": "b1-0097",
+    "prompt": "Setting: October 2158, Epsilon Eridani\nContext: […] “Right on time.” I grinned at Guppy. Predictably, he returned a fishy poker face. “I wonder if he found Vulcans.”\nInput type: command\nBill: I wonder if he found Vulcans."
+  },
+  {
+    "id": "b1-0136",
+    "prompt": "Setting: August 2169, Beta Hydri\nContext: of time.” I was belaboring the obvious, and I knew it, but I’d always found that talking something out helped to work through it in my mind. […] “Ya think?” I pointed to the inner planets on the system schematic. “We may end up having to do some planetary mining. Let’s go take a look at some of the rocky planets and see what’s available.”\nInput type: command\nMario: We may end up having to do some planetary mining. Let's go take a look at some of the rocky planets and see what's available."
+  },
+  {
+    "id": "b1-0130",
+    "prompt": "Setting: August 2169, Beta Hydri\nContext: thousand-meter drop to the forest floor. This forest had never existed except in literature, and even there, it was an amalgam of a lot of different books. Mostly it was from Foster’s Midworld, but I’d thinned things out so there were good lines-of-sight. I’d added lots of earth-birds and deleted any large, hungry, dragony things. I raised an eyebrow at Guppy. “Got an opinion?”\nInput type: question\nMario: Got an opinion?"
+  },
+  {
+    "id": "b1-0142",
+    "prompt": "Setting: August 2169, Beta Hydri\nContext: s and stacks of large metal ingots of various types. Each ingot was pure, all one element. Iron, titanium, copper, nickel, tons of the stuff. The carrier looked like it had only been a quarter full, though, unless some had been taken. It appeared we had found our metal thieves. Well, one of them. And thief was probably too strong a word. But still… […] “Oh, for—what now?”\nInput type: question\nMario: Oh, for—what now?"
+  },
+  {
+    "id": "b1-0138",
+    "prompt": "Setting: August 2169, Beta Hydri\nContext: ews, bad news situations. Good news, I found lots that was interesting. Bad news, no metals. None. Not within reach of anything in my arsenal, anyway. The planet had a magnetic field, so it obviously had a metallic core. But next to nothing in the crust. Oh, a patch here and a patch there, but not worth grubbing for. […] “And this isn’t anomalous enough already?”\nInput type: question\nMario: And this isn't anomalous enough already?"
+  },
+  {
+    "id": "b1-0010",
+    "prompt": "Setting: July 15, 2133, Earth, replicant lab (Dr. Landers)\nContext: grieve for my family. “I’m sorry to hear that,” I said. “But presumably we’re all being treated the same, so the switching off thing doesn’t seem to be the answer. Instead, how about keeping me busy with intellectual activity? How about some study time? Maybe with access to whatever the internet has evolved into? I’d like to see what I’ve been missing for the last hundred-odd”—\nInput type: banter\nBob-1: (spoken) I'd like to see what I've been missing for the last hundred-odd— ___ years."
   },
   {
     "id": "b1-0005",
-    "prompt": "Setting: Heaven-1, Sol system outbound, 2133\nContext: Routine check after the drive is lit. Sets the baseline 'nothing to report' phrasing that recurs across the series.\nInput type: question\nBob-1: GUPPI, status report."
+    "prompt": "Setting: June 25, 2133, Earth, replicant lab (Dr. Landers)\nContext: w after some more preliminary orientation, but…” Dr. Landers picked up the tablet and aimed a finger. Oh, not again. “Wait! No, don’t do—” *** I found myself in a different room in the same institutional off-white color. A rack on one wall contained some […] small mechanical devices. In front of each device, a red light glowed. Directly in front of me was a table with a number\nInput type: banter\nBob-1: (thought) Directly in front of me was a table with a number ___ of blocks."
   },
   {
-    "id": "b1-0006",
-    "prompt": "Setting: Heaven-1, Sol system outbound, 2133\nContext: Bob has chosen Epsilon Eridani as the first destination and wants the number. GUPPI answers with a figure and no commentary.\nInput type: question\nBob-1: GUPPI, how long to Epsilon Eridani?"
+    "id": "b1-0012",
+    "prompt": "Setting: July 19, 2133, Earth, replicant lab (Dr. Landers)\nContext: ole exercise…” “Soon, Bob. Right now, I’d like to talk to you about your previous life. You handled two days subjective in a simulation with no human contact at all and were irritated when I pulled you out. Silly question, perhaps, but would you consider yourself a loner?” I chuckled. “Let me tell you a little story. There was a movie out a number of years ago called Castaway.”\nInput type: banter\nBob-1: (spoken) There was a movie out a number of years ago called Castaway. ___"
   },
   {
-    "id": "b1-0007",
-    "prompt": "Setting: Heaven-1, outer Sol system, 2133\nContext: The Brazilian probe (Medeiros) attacks Bob before he clears the Sol system. GUPPI raises the alert unprompted; this is the first combat in the series.\nInput type: event\nBob-1: (event) unidentified vessel detected on intercept course"
+    "id": "b1-0004",
+    "prompt": "Setting: June 25, 2133, Earth, replicant lab (Dr. Landers)\nContext: . Bob, you’re doing very well, so far. I think we’ll bump up the roamer test. I’d originally scheduled this for a week from now after some more preliminary orientation, but…” Dr. Landers picked up the tablet and aimed a finger. Oh, not again. “Wait! No, don’t do—” *** I found myself in a different room in the same institutional off-white color. A rack on one wall contained some\nInput type: banter\nBob-1: (thought) A rack on one wall contained some ___ small mechanical devices."
   },
   {
-    "id": "b1-0008",
-    "prompt": "Setting: Heaven-1, outer Sol system, 2133\nContext: Mid-battle with Medeiros. Bob fires the kinetic 'busters'. GUPPI confirms with a single word.\nInput type: command\nBob-1: GUPPI, launch busters!"
+    "id": "b1-0001",
+    "prompt": "Setting: 2133, Earth, replicant lab (Dr. Landers)\nContext: CryoEterna, they were standing by with a cryocontainer when time of death was pronounced.” “Well, good to know my money wasn’t wasted, anyway. So what year is it?” Dr. Landers laughed. “So nice to talk to a subject so quick on the uptake. It is June 24, 2133, and we are currently in New Handeltown, which would have been Portland in your day.” I was surprised by that. So that’s…\nInput type: banter\nBob-1: (thought) So that's… ___ years."
   }
 ]

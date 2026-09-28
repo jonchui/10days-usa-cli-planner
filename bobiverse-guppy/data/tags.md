@@ -17,7 +17,8 @@ Three families. Every quote carries at least one from each family.
 | `#cat-interject` | early-book habit: corrects Bob's vague estimate with an exact number | exact figure mid-thought |
 | `#cat-config` | Bob changes GUPPI itself: name, avatar, behavior rules | `[Acknowledged]` + behavior change |
 | `#cat-execute` | launch / fire / deploy / build | terse confirmation, sometimes with count |
-| `#cat-snark` | later-book GUPPI that has picked up Bob's sarcasm | still terse, but with an edge |
+| `#cat-advise` | unsolicited caveat, objection or recommendation appended to (or instead of) the answer | `[Noted. However, replication is a higher priority]` |
+| `#cat-snark` | humor / social reply: apologies, deadpan, wordplay (present from book 1, p.76) | `[Above my pay grade]`, `[Double-plus anomaly detected. Better?]` |
 
 ## `#setting-*` where / when
 
