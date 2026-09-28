@@ -1,0 +1,24 @@
+name: guppy-eval
+on:
+  push:
+    paths: ["bobiverse-guppy/**"]
+  pull_request:
+    paths: ["bobiverse-guppy/**"]
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: bobiverse-guppy } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -q anthropic pytest ebooklib beautifulsoup4
+      - run: python scripts/categorize.py --dry-run --no-report
+      - run: python -m pytest -q tests
+      - run: python scripts/run_eval.py --backend rules --label ci-rules
+      - name: prompt-based eval (only when a key is configured)
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" }
+        run: python scripts/run_eval.py --backend prompt:guppy/prompts/v0.1.md --label ci-v0.1
+      - uses: actions/upload-artifact@v4
+        with: { name: guppy-results, path: bobiverse-guppy/results }
