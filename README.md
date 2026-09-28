@@ -102,3 +102,7 @@ Action: 1)edit[cursor] 2)pickup 3)toggle-map 4)edit-method 5)edit-menu 6)auto-pl
 
 - This project is designed as a practical strategy helper and simulation tool.
 - The solver uses deterministic search + memoization, not LLM guessing, for route validity.
+
+## Side project
+
+`bobiverse-guppy/` — GUPPI (Bobiverse) input/output log, pattern report, and eval harness for training a GUPPI-mimic model. See its README.
