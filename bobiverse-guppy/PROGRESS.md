@@ -1,53 +1,68 @@
 # Progress
 
-Updated: 2026-09-28 19:10 UTC
+Updated: 2026-09-28 19:20 UTC
 
 ## Status
 
 | milestone | state |
 |---|---|
 | Project scaffold, schema, tag taxonomy | done |
-| First 10 exchanges logged with context + hashtags | done — **all 10 are `recalled`, none page-verified** |
-| Categorize + pattern report | done, `reports/patterns.md` |
-| 80/20 test set | done, 8 of 10 records across 6 categories |
-| Eval harness + leaderboard | done, runs after every version (`make eval`, CI workflow) |
-| Trial run | done — Guppy v0.0 (rules) 62.5% match on 8 test records, see `results/leaderboard.md` |
-| Guppy v0.1 (prompt) | run blind on session credits: 50% match, 62.5% judge, F1 0.74. Failure mode: adds a second clause |
-| Guppy v0.2 (prompt + length discipline) | run blind on session credits: 75% match, 75% judge, F1 0.90. Remaining misses are the two exact numbers |
-| Verified quotes with page numbers | **blocked: need the ebook files in `source/`** |
+| Book 1 text | received (296-page PDF via iCloud link, stored in gitignored `source/`) |
+| Exchanges logged with page + chapter + setting + hashtags | **146 verified** from book 1, all with PDF page numbers. The 10 recalled seeds are retired. |
+| Categorize + pattern report | done, `reports/patterns.md` rewritten from real data (10 rules with page cites) |
+| 80/20 test set | 35 records over the 7 categories that cover 92% of exchanges (`status`, `alert`, `ack`, `advise`, `calc`, `snark`, `interject`) |
+| Eval harness + leaderboard | done, runs after every version; no-API replay backend + judge-file |
+| Guppy v0.0 rules | run |
+| Guppy v0.2 / v0.3 prompts | run blind on session credits (see run log) |
+| Guppy v1.0 fine-tune | not started; `training/sft.jsonl` has 111 training examples (test set excluded) |
+
+## Run log (book-1 test set, 35 verified records)
+
+| version | match | judge | F1 | note |
+|---|---|---|---|---|
+| v0.0 rules | 0% | n/a | 0.03 | floor |
+| v0.2 prompt | 2.9% | 34.3% | 0.17 | still says "Acknowledged"; the book never does |
+| v0.3 prompt (data-derived rules) | 5.7% | 28.6% | 0.22 | gets the naval "Aye", interjections 2/5; judge fell because it invents specific figures and facts the book does not have (`ack` 80%, `advise`/`snark`/`status` 0% on both versions) |
+
+Earlier runs against the 8 recalled seeds (v0.1 50%, v0.2 75%) are kept in
+`results/leaderboard.md` for history but are not comparable: the gold text
+there was from memory.
+
+What the real numbers say: verbatim match with the book is a very hard target
+for a prompt alone. The prompt fixes the *form* (100% bracketed, right
+acknowledgement vocabulary, right length) but cannot know the *facts* (the
+specific number, what the scan found). Facts are what fine-tuning on the
+exchange log plus retrieval of the surrounding scene would supply. The judge
+score is the better progress signal for prompt versions; match % is the
+target for the fine-tuned model.
+
+## What was wrong in the recalled seeds (now corrected by the text)
+
+- GUPPI never says `[Acknowledged]` or `[Affirmative]` to an order in book 1. It says `[Aye]`, `[Aye sir]`, `[Done]`, `[Noted]`, `[By your command]`.
+- GUPPI is funny from p.76 on (`[Aye aye sir]`, `[Already on the list. Bump it up?]`), not only in later books.
+- The acronym line is answered to a silent query, p.39, not a spoken question.
+- The number interjections are exact: `[117]`, `[483.957642]`, `[32]`, `[128]`, `[20 cm when not constrained]`, `[133 years ago]`.
+- 7% of GUPPI lines are unsolicited caveats/objections (`advise`), a category the seeds did not have.
 
 ## Blockers (yours)
 
-1. **Book text.** Drop the epub/txt/pdf of each book into `bobiverse-guppy/source/`
-   (iCloud Drive is not reachable from this cloud session, and Dropbox / Google
-   Drive have no Bobiverse files). Kindle → Calibre → epub works.
-2. **API key (optional).** Runs so far used this session's own model access via
-   the replay backend (`results/outputs-*.json` + `results/judge-*.json`).
-   Set `ANTHROPIC_API_KEY` only if you want CI to run the prompt eval on its own.
+1. **Books 2–5.** Same iCloud-link route works. Each book is ~10 min of my time to extract, review and tag.
+2. **API key (optional).** Only needed if you want CI to run the prompt eval itself. Blind runs on session credits work fine via the replay backend.
 
 ## ETAs
 
-Grabbing = extracting + logging with chapter/page/tags. Processing = review + auto-tag + pattern report. Testing = one eval run per version.
+| quotes | grab | process | test |
+|---|---|---|---|
+| 10 | done | done | done |
+| 100 | done (146 from book 1) | done | done |
+| 1,000 | **corpus estimate: ~600–750 literal GUPPI lines across 5 books** (book 1 = 146). ~10 min per book once the file arrives | ~15 min per book | ~5 min per version per book |
 
-| quotes | grab | process | test | notes |
-|---|---|---|---|---|
-| 10 | **done** (recalled) → ~5 min after book 1 arrives to swap in verified lines | done | done (rules); ~2 min for v0.1 once key is set | |
-| 100 | ~10 min after book 1 arrives (`extract.py` is instant; the time is skimming false positives) | ~30 min human skim + auto-tag | ~3 min per version with API, seconds for rules | book 1 alone should yield 100+ bracketed GUPPI lines |
-| 1,000 | ~2 h after all 5 books arrive (skim ~200/book) | ~2 h review + tag | ~15 min per version | **caveat:** the five books likely contain 300–600 literal GUPPI lines total. Reaching 1,000 training rows means augmenting with paraphrased inputs and synthetic exchanges tagged `synthetic`; the test set stays verified-only |
+Reaching 1,000 training rows will need ~300 augmented rows (paraphrased Bob
+inputs over verified outputs, tagged `synthetic`); the test set stays
+verified-only.
 
-## Next actions (in order, no input needed from you once the books are in `source/`)
+## Next actions
 
-1. `extract.py` on book 1 → verify/replace the 10 recalled seeds, log the first 100.
-2. Re-run `categorize.py`; rewrite the observed-rules section of `reports/patterns.md` from real data.
-3. Run v0.1 (prompt) with judge; iterate to v0.2, v0.3 on the training split only.
-4. Books 2–5 → 300+ verified; build `training/sft.jsonl`; fine-tune (Bedrock custom model or open-weights) → Guppy v1.0; re-test.
-
-## Run log
-
-| version | how | match | judge | F1 | note |
-|---|---|---|---|---|---|
-| v0.0 rules | local | 62.5% | n/a | 0.83 | rules written knowing the seeds, smoke test only |
-| v0.1 prompt | blind, session credits | 50% | 62.5% | 0.74 | over-elaborates: appends ranges/qualifiers |
-| v0.2 prompt | blind, session credits | 75% | 75% | 0.90 | first v0.2 draft leaked two test phrases into the prompt examples; discarded and re-run with neutral examples before scoring |
-
-All against 8 `recalled` records. Numbers will move once the book text verifies or replaces them.
+1. Books 2–5 → extract, review, tag (same pipeline).
+2. Add scene retrieval to the prompt backend (give the model the previous 2–3 exchanges of the same scene) and re-run v0.4; expect the judge score to move, not match %.
+3. Fine-tune on `training/sft.jsonl` (Bedrock custom model or open weights) → Guppy v1.0; re-test on the same 35 (then the cross-book) test set.
