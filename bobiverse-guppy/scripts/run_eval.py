@@ -4,6 +4,7 @@
     python scripts/run_eval.py --backend rules
     python scripts/run_eval.py --backend prompt:guppy/prompts/v0.1.md [--model claude-opus-5] [--judge]
     python scripts/run_eval.py --backend replay:results/outputs-v0.2.json   # {id: output}
+    python scripts/run_eval.py --backend replay:... --judge-file results/judge-v0.2.json   # {id: true/false}
     python scripts/run_eval.py --backend rules --all     # every record, not just the test set
 
 Writes results/runs/<version>__<utc>.json and refreshes results/leaderboard.md.
@@ -96,6 +97,7 @@ def main(argv=None):
     ap.add_argument("--backend", default="rules")
     ap.add_argument("--model", default=None)
     ap.add_argument("--judge", action="store_true", help="also ask an LLM judge (needs API key)")
+    ap.add_argument("--judge-file", type=Path, default=None, help="pre-computed judge verdicts {id: bool} (e.g. from a blind grading pass run elsewhere)")
     ap.add_argument("--all", action="store_true", help="score every record instead of the test set")
     ap.add_argument("--label", default=None, help="override version label in results")
     a = ap.parse_args(argv)
@@ -109,12 +111,15 @@ def main(argv=None):
     version, respond, client = make_backend(a.backend, a.model)
     version = a.label or version
 
+    judge_file = json.loads(a.judge_file.read_text()) if a.judge_file else None
     rows = []
     for r in recs:
         pred = respond(r)
         row = {"id": r["id"], "category": r["category"], "provenance": r["provenance"],
                "input": r["input"], "gold": r["output"], "pred": pred, **score_pair(pred, r["output"])}
-        if a.judge:
+        if judge_file is not None:
+            row["judge"] = bool(judge_file.get(r["id"], False))
+        elif a.judge:
             from guppy.api_backend import judge
             import anthropic
             row["judge"] = judge(client or anthropic.Anthropic(), r, pred)

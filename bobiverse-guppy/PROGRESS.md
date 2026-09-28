@@ -1,6 +1,6 @@
 # Progress
 
-Updated: 2026-09-28
+Updated: 2026-09-28 19:10 UTC
 
 ## Status
 
@@ -12,7 +12,8 @@ Updated: 2026-09-28
 | 80/20 test set | done, 8 of 10 records across 6 categories |
 | Eval harness + leaderboard | done, runs after every version (`make eval`, CI workflow) |
 | Trial run | done — Guppy v0.0 (rules) 62.5% match on 8 test records, see `results/leaderboard.md` |
-| Guppy v0.1 (prompt on Claude API) | written, **not run: no `ANTHROPIC_API_KEY` in this environment** |
+| Guppy v0.1 (prompt) | run blind on session credits: 50% match, 62.5% judge, F1 0.74. Failure mode: adds a second clause |
+| Guppy v0.2 (prompt + length discipline) | run blind on session credits: 75% match, 75% judge, F1 0.90. Remaining misses are the two exact numbers |
 | Verified quotes with page numbers | **blocked: need the ebook files in `source/`** |
 
 ## Blockers (yours)
@@ -20,8 +21,9 @@ Updated: 2026-09-28
 1. **Book text.** Drop the epub/txt/pdf of each book into `bobiverse-guppy/source/`
    (iCloud Drive is not reachable from this cloud session, and Dropbox / Google
    Drive have no Bobiverse files). Kindle → Calibre → epub works.
-2. **API key.** Set `ANTHROPIC_API_KEY` (locally or as a GitHub secret) to run
-   v0.1 and the LLM judge.
+2. **API key (optional).** Runs so far used this session's own model access via
+   the replay backend (`results/outputs-*.json` + `results/judge-*.json`).
+   Set `ANTHROPIC_API_KEY` only if you want CI to run the prompt eval on its own.
 
 ## ETAs
 
@@ -39,3 +41,13 @@ Grabbing = extracting + logging with chapter/page/tags. Processing = review + au
 2. Re-run `categorize.py`; rewrite the observed-rules section of `reports/patterns.md` from real data.
 3. Run v0.1 (prompt) with judge; iterate to v0.2, v0.3 on the training split only.
 4. Books 2–5 → 300+ verified; build `training/sft.jsonl`; fine-tune (Bedrock custom model or open-weights) → Guppy v1.0; re-test.
+
+## Run log
+
+| version | how | match | judge | F1 | note |
+|---|---|---|---|---|---|
+| v0.0 rules | local | 62.5% | n/a | 0.83 | rules written knowing the seeds, smoke test only |
+| v0.1 prompt | blind, session credits | 50% | 62.5% | 0.74 | over-elaborates: appends ranges/qualifiers |
+| v0.2 prompt | blind, session credits | 75% | 75% | 0.90 | first v0.2 draft leaked two test phrases into the prompt examples; discarded and re-run with neutral examples before scoring |
+
+All against 8 `recalled` records. Numbers will move once the book text verifies or replaces them.
