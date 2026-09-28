@@ -1,0 +1,40 @@
+{
+  "skill_name": "set-contact-photo",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "turn clipboard into image, then store into Durzo's contact image. Use the iMessage thread where Durzo mentions his name. I'm in the middle of creating his contact.",
+      "expected_output": "Reads the clipboard on the Mac to a PNG, reads the thread to confirm which person is Durzo, crops a square headshot of him (not JC), saves the open card with Done, sets the photo via Contacts AppleScript, and reports in one line who it picked.",
+      "files": [],
+      "assertions": [
+        "Does not ask JC for the name, the image, or which app to use",
+        "Excludes JC (the camera holder) from the crop",
+        "Output image is square and shows one person's head and shoulders",
+        "Saves the unsaved card before running the AppleScript, rather than failing on 'no contact'",
+        "Final message is one or two lines and names the face chosen"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "add this pic to Maya's contact",
+      "expected_output": "Uses the attached image, finds Maya in Contacts (or creates her from the iMessage handle if absent), crops and sets the photo, and reports.",
+      "files": ["photo.jpg"],
+      "assertions": [
+        "Uses the attached file instead of touching the clipboard",
+        "If Maya has no card, creates one from the thread handle and says so",
+        "Does not send any iMessage"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "put the selfie Sam sent me last night on his contact card",
+      "expected_output": "Pulls the attachment from the iMessage thread with Sam, crops it, sets it on Sam's card, and reports. If the Mac is not reachable, sends the cropped JPEG and the one-line manual step.",
+      "files": [],
+      "assertions": [
+        "Locates the image in the iMessage thread, not the clipboard",
+        "If Sam already has a photo, keeps a copy of the old one before replacing",
+        "Falls back to sending the cropped file when no Mac tools are available, without asking JC to debug"
+      ]
+    }
+  ]
+}
