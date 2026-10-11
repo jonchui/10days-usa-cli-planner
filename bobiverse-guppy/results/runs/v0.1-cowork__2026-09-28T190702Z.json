@@ -1,0 +1,191 @@
+{
+  "version": "v0.1-cowork",
+  "timestamp": "2026-09-28T19:07:02Z",
+  "backend": "replay:results/outputs-v0.1-cowork.json",
+  "scope": "testset",
+  "summary": {
+    "all": {
+      "n": 8,
+      "exact_pct": 50.0,
+      "match_pct": 50.0,
+      "judge_pct": 62.5,
+      "mean_f1": 0.739,
+      "bracket_ok_pct": 100.0
+    },
+    "verified": {
+      "n": 0
+    },
+    "recalled": {
+      "n": 8,
+      "exact_pct": 50.0,
+      "match_pct": 50.0,
+      "judge_pct": 62.5,
+      "mean_f1": 0.739,
+      "bracket_ok_pct": 100.0
+    },
+    "by_category": {
+      "alert": {
+        "n": 1,
+        "exact_pct": 0.0,
+        "match_pct": 0.0,
+        "judge_pct": 100.0,
+        "mean_f1": 0.667,
+        "bracket_ok_pct": 100.0
+      },
+      "config": {
+        "n": 3,
+        "exact_pct": 66.7,
+        "match_pct": 66.7,
+        "judge_pct": 66.7,
+        "mean_f1": 0.875,
+        "bracket_ok_pct": 100.0
+      },
+      "eta": {
+        "n": 1,
+        "exact_pct": 0.0,
+        "match_pct": 0.0,
+        "judge_pct": 0.0,
+        "mean_f1": 0.4,
+        "bracket_ok_pct": 100.0
+      },
+      "execute": {
+        "n": 1,
+        "exact_pct": 100.0,
+        "match_pct": 100.0,
+        "judge_pct": 100.0,
+        "mean_f1": 1.0,
+        "bracket_ok_pct": 100.0
+      },
+      "interject": {
+        "n": 1,
+        "exact_pct": 0.0,
+        "match_pct": 0.0,
+        "judge_pct": 0.0,
+        "mean_f1": 0.222,
+        "bracket_ok_pct": 100.0
+      },
+      "status": {
+        "n": 1,
+        "exact_pct": 100.0,
+        "match_pct": 100.0,
+        "judge_pct": 100.0,
+        "mean_f1": 1.0,
+        "bracket_ok_pct": 100.0
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "b1-0001",
+      "category": "config",
+      "provenance": "recalled",
+      "input": "What are you, exactly?",
+      "gold": "[General Unit Primary Peripheral Interface]",
+      "pred": "[General Unit Primary Peripheral Interface. Ship-systems interface and monitoring software]",
+      "exact": false,
+      "normalized": false,
+      "f1": 0.625,
+      "bracket_ok": true,
+      "length_ratio": 2.0,
+      "judge": false
+    },
+    {
+      "id": "b1-0002",
+      "category": "interject",
+      "provenance": "recalled",
+      "input": "(Bob thinks to himself that the checkout will take 'a few hours')",
+      "gold": "[3.2 hours]",
+      "pred": "[Checkout requires 4 hours, 17 minutes]",
+      "exact": false,
+      "normalized": false,
+      "f1": 0.2222,
+      "bracket_ok": true,
+      "length_ratio": 3.0,
+      "judge": false
+    },
+    {
+      "id": "b1-0003",
+      "category": "config",
+      "provenance": "recalled",
+      "input": "GUPPI, stop that. From now on, only respond when I address you directly.",
+      "gold": "[Acknowledged]",
+      "pred": "[Acknowledged]",
+      "exact": true,
+      "normalized": true,
+      "f1": 1.0,
+      "bracket_ok": true,
+      "length_ratio": 1.0,
+      "judge": true
+    },
+    {
+      "id": "b1-0004",
+      "category": "config",
+      "provenance": "recalled",
+      "input": "GUPPI, use this avatar.",
+      "gold": "[Acknowledged]",
+      "pred": "[Acknowledged]",
+      "exact": true,
+      "normalized": true,
+      "f1": 1.0,
+      "bracket_ok": true,
+      "length_ratio": 1.0,
+      "judge": true
+    },
+    {
+      "id": "b1-0005",
+      "category": "status",
+      "provenance": "recalled",
+      "input": "GUPPI, status report.",
+      "gold": "[All systems nominal]",
+      "pred": "[All systems nominal]",
+      "exact": true,
+      "normalized": true,
+      "f1": 1.0,
+      "bracket_ok": true,
+      "length_ratio": 1.0,
+      "judge": true
+    },
+    {
+      "id": "b1-0006",
+      "category": "eta",
+      "provenance": "recalled",
+      "input": "GUPPI, how long to Epsilon Eridani?",
+      "gold": "[Estimated transit time: eleven years, two months]",
+      "pred": "[Transit time to Epsilon Eridani: 11 years, 3 months at current acceleration profile]",
+      "exact": false,
+      "normalized": false,
+      "f1": 0.4,
+      "bracket_ok": true,
+      "length_ratio": 1.857,
+      "judge": false
+    },
+    {
+      "id": "b1-0007",
+      "category": "alert",
+      "provenance": "recalled",
+      "input": "(event) unidentified vessel detected on intercept course",
+      "gold": "[Contact. Unidentified vessel on intercept course]",
+      "pred": "[Contact. Unidentified vessel on intercept course. Range 2.4 million kilometers, closing]",
+      "exact": false,
+      "normalized": false,
+      "f1": 0.6667,
+      "bracket_ok": true,
+      "length_ratio": 1.833,
+      "judge": true
+    },
+    {
+      "id": "b1-0008",
+      "category": "execute",
+      "provenance": "recalled",
+      "input": "GUPPI, launch busters!",
+      "gold": "[Launching]",
+      "pred": "[Launching]",
+      "exact": true,
+      "normalized": true,
+      "f1": 1.0,
+      "bracket_ok": true,
+      "length_ratio": 1.0,
+      "judge": true
+    }
+  ]
+}

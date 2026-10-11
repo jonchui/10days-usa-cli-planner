@@ -1,0 +1,9 @@
+source/*
+!source/README.md
+data/candidates.jsonl
+__pycache__/
+.pytest_cache/
+*.pyc
+training/sft.jsonl
+data/windows-*.jsonl
+data/labels-*.jsonl
