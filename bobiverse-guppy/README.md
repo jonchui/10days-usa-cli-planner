@@ -82,3 +82,15 @@ prompt versions are leak-checked against the test set before they are run.
 
 The book text stays on your machine (`source/` is gitignored). The log holds
 only short dialogue lines with citations, for a personal research project.
+
+## Talking to GUPPI as your assistant
+
+`guppy/prompts/assistant-v1.md` is the book voice plus Jon's standing rules (owner mode,
+notification discipline, filing), for an assistant that has every tool a session gives it.
+
+- **Claude Code / Codex / Cursor:** merge `jonchui/skills` (`guppy-voice`) and say "Guppy, …";
+  or start a session as GUPPI outright:
+  `alias guppy='claude --append-system-prompt "$(cat ~/code/10days-usa-cli-planner/bobiverse-guppy/guppy/prompts/assistant-v1.md)"'`
+- **claude.ai on the phone, with your connectors and memory:** create a Project named GUPPI,
+  paste `assistant-v1.md` as its instructions, turn on Gmail, Calendar, Notion.
+- **The eval set only:** the GUPPI Console artifact runs `v0.3.md` (book lines, no tools).
