@@ -1,6 +1,6 @@
 # Progress
 
-Updated: 2026-09-28 19:20 UTC
+Updated: 2026-10-11
 
 ## Status
 
@@ -44,9 +44,34 @@ target for the fine-tuned model.
 - The number interjections are exact: `[117]`, `[483.957642]`, `[32]`, `[128]`, `[20 cm when not constrained]`, `[133 years ago]`.
 - 7% of GUPPI lines are unsolicited caveats/objections (`advise`), a category the seeds did not have.
 
+## Books 2–6: the audio route (11 Oct)
+
+Books 5 and 6 exist as text on the Mac, made from the Audible audio by SyncRead
+(`jonchui/syncread`, `library/<slug>/out/text.pdf`). Books 2–4 go the same way. This cloud
+session cannot run that pipeline (no Audible login, no ffmpeg/GPU, no Tailscale to the PC), so
+`syncread/pipeline/bobiverse.py` does it on the Mac in two commands:
+
+```bash
+cd ~/code/whispersync/pipeline          # the syncread checkout
+.venv/bin/python bobiverse.py get 2 3 4   # audible-grab + transcription (PC GPU if up), ~15 min/book on the PC
+.venv/bin/python bobiverse.py export      # -> ~/Desktop/bobiverse-text/book{1..6}-*.pdf/.txt
+```
+
+Then share `~/Desktop/bobiverse-text` as an iCloud link, like book 1.
+
+**Audio text has no brackets or quote marks**, so `extract.py` cannot find GUPPI's lines in it.
+New path: `scripts/extract_audio.py` cuts the scenes where GUPPI is named (plus the dialogue
+around them) into windows with page + chapter; a blind labeling pass (`scripts/label_windows.md`)
+marks GUPPI's lines inside each window; `scripts/windows_to_candidates.py` turns the labels into
+candidates. Measured on book 1 with its brackets stripped: 92.5% of the 146 verified lines fall
+inside a window while the windows cover 27% of the book. Audio-derived records are ingested as
+`synthetic` (Whisper's wording) until spot-checked against the narration, so the headline score
+stays book-exact.
+
 ## Blockers (yours)
 
-1. **Books 2–5.** Same iCloud-link route works. Each book is ~10 min of my time to extract, review and tag.
+1. **Books 2–6 text.** Run the two `bobiverse.py` commands above on the Mac and share the folder.
+   If you have real PDFs/epubs of 2–4 (like book 1), those are better than audio text: brackets intact.
 2. **API key (optional).** Only needed if you want CI to run the prompt eval itself. Blind runs on session credits work fine via the replay backend.
 
 ## ETAs
